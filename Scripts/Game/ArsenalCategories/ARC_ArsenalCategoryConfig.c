@@ -62,7 +62,9 @@ class ARC_ArsenalCategoryConfig
 	//------------------------------------------------------------------------------------------------
 	void SetVisibilityRules(notnull array<ref ARC_VisibilityRule> rules)
 	{
-		m_aVisibilityRules.Copy(rules);
+		m_aVisibilityRules.Clear();
+		foreach (ARC_VisibilityRule rule : rules)
+			m_aVisibilityRules.Insert(rule);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -139,7 +141,8 @@ class ARC_ArsenalCategoryConfig
 	{
 		ARC_ArsenalCategoryConfig config = new ARC_ArsenalCategoryConfig();
 		config.m_aCategories = {};
-		config.m_aCategories.Copy(categories);
+		foreach (ARC_ArsenalCategory category : categories)
+			config.m_aCategories.Insert(category);
 		if (rules)
 			config.SetVisibilityRules(rules);
 

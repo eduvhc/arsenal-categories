@@ -99,7 +99,10 @@ class ARC_CategoryJson
 		{
 			context.StartObject();
 			context.WriteValue("name", category.GetName());
-			context.WriteValue("icon", category.GetIcon());
+
+			// As a ResourceName the serializer keeps only the GUID; as a string the full {GUID}path survives.
+			string iconText = category.GetIcon();
+			context.WriteValue("icon", iconText);
 
 			array<string> typeNames = {};
 			FlagsToNames(SCR_EArsenalItemType, category.GetItemTypes(), typeNames);
@@ -178,14 +181,14 @@ class ARC_CategoryJson
 				break;
 
 			string name;
-			ResourceName icon;
+			string iconText;
 			array<string> typeNames = {};
 			array<string> modeNames = {};
 			array<string> contains = {};
 			array<string> excludes = {};
 
 			context.ReadValue("name", name);
-			context.ReadValue("icon", icon);
+			context.ReadValue("icon", iconText);
 			context.ReadValue("itemTypes", typeNames);
 			context.ReadValue("itemModes", modeNames);
 			context.ReadValue("prefabContains", contains);
@@ -200,7 +203,7 @@ class ARC_CategoryJson
 
 			SCR_EArsenalItemType types = NamesToFlags(SCR_EArsenalItemType, typeNames, name);
 			SCR_EArsenalItemMode modes = NamesToFlags(SCR_EArsenalItemMode, modeNames, name);
-			categories.Insert(ARC_ArsenalCategory.Create(name, icon, types, modes, contains, excludes));
+			categories.Insert(ARC_ArsenalCategory.Create(name, ToResourceName(iconText), types, modes, contains, excludes));
 		}
 
 		context.EndArray();
@@ -260,6 +263,21 @@ class ARC_CategoryJson
 		}
 
 		context.EndArray();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Accepts "{GUID}path", "{GUID}" or a bare 16-hex GUID (what older files written by the
+	//! ResourceName serializer contain) and returns something the engine can load.
+	protected static ResourceName ToResourceName(string text)
+	{
+		text.Trim();
+		if (text.IsEmpty() || text.StartsWith("{"))
+			return text;
+
+		if (text.Length() == 16)
+			return "{" + text + "}";
+
+		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------
