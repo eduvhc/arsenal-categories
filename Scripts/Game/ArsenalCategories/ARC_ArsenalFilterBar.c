@@ -1,5 +1,5 @@
-//! Category list for an arsenal panel: full-width text buttons ("Assault Rifles (24)"), "All" first
-//! and "Other" last. Built from the vanilla WLib_ButtonText layout so it inherits the game's look,
+//! Category list for an arsenal panel: icon + text buttons ("Assault Rifles (24)"), "All" first
+//! and "Other" last. Built from the vanilla WLib_ButtonTextImage layout so it inherits the game's look,
 //! focus and gamepad handling. Owns no game state: it only remembers the selected index and tells
 //! the controller when the player picks another one.
 //!
@@ -9,7 +9,10 @@
 //! false to stack the buttons above the grid inside the panel instead.
 class ARC_ArsenalFilterBar
 {
-	static const ResourceName BUTTON_LAYOUT = "{75C912A1C89BE6C2}UI/layouts/WidgetLibrary/Buttons/WLib_ButtonText.layout";
+	static const ResourceName BUTTON_LAYOUT = "{4913D5BED796721F}UI/layouts/WidgetLibrary/Buttons/WLib_ButtonTextImage.layout";
+	static const ResourceName ICON_IMAGESET = "{2EFEA2AF1F38E7F0}UI/Textures/Icons/icons_wrapperUI-64.imageset";
+	static const string ICON_ALL = "gridView";
+	static const string ICON_OTHER = "misc";
 	static const int ALL_INDEX = -1;
 	static const int OTHER_INDEX = -2;
 	static const bool SIDEBAR = true;
@@ -18,7 +21,8 @@ class ARC_ArsenalFilterBar
 	static const float SIDEBAR_TOP = 0;
 	static const int INLINE_COLUMNS = 2;
 	static const int INLINE_ZORDER = 1000;
-	static const float BUTTON_HEIGHT = 30;
+	static const float BUTTON_HEIGHT = 40;
+	static const float ICON_SIZE = 24;
 	static const float BUTTON_SPACING = 2;
 
 	//! Invoked with the new category index after the player clicks a button.
@@ -33,8 +37,9 @@ class ARC_ArsenalFilterBar
 	//------------------------------------------------------------------------------------------------
 	//! \param panelRoot root widget of the storage panel (InventoryContainerGrid "ContainerRoot")
 	//! \param labels button captions in display order (already including counts)
+	//! \param icons icon per label (.edds resource; empty for the built-in All / Other icons)
 	//! \param categoryIndices category index per label (ALL_INDEX / OTHER_INDEX allowed)
-	void ARC_ArsenalFilterBar(notnull Widget panelRoot, notnull array<string> labels, notnull array<int> categoryIndices)
+	void ARC_ArsenalFilterBar(notnull Widget panelRoot, notnull array<string> labels, notnull array<ResourceName> icons, notnull array<int> categoryIndices)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		int columns = INLINE_COLUMNS;
@@ -89,7 +94,7 @@ class ARC_ArsenalFilterBar
 
 		foreach (int i, string label : labels)
 		{
-			AddButton(categoryIndices[i], label);
+			AddButton(categoryIndices[i], label, icons[i]);
 		}
 
 		Select(ALL_INDEX, false);
@@ -139,7 +144,7 @@ class ARC_ArsenalFilterBar
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void AddButton(int categoryIndex, string label)
+	protected void AddButton(int categoryIndex, string label, ResourceName icon)
 	{
 		if (m_aColumns.IsEmpty())
 			return;
@@ -148,14 +153,14 @@ class ARC_ArsenalFilterBar
 		Widget buttonWidget = GetGame().GetWorkspace().CreateWidgets(BUTTON_LAYOUT, column);
 		if (!buttonWidget)
 		{
-			Print("[ARC] Could not create WLib_ButtonText widget", LogLevel.WARNING);
+			Print("[ARC] Could not create WLib_ButtonTextImage widget", LogLevel.WARNING);
 			return;
 		}
 
 		SCR_ButtonTextComponent button = SCR_ButtonTextComponent.Cast(buttonWidget.FindHandler(SCR_ButtonTextComponent));
 		if (!button)
 		{
-			Print("[ARC] WLib_ButtonText has no SCR_ButtonTextComponent handler", LogLevel.WARNING);
+			Print("[ARC] WLib_ButtonTextImage has no SCR_ButtonTextComponent handler", LogLevel.WARNING);
 			buttonWidget.RemoveFromHierarchy();
 			return;
 		}
@@ -169,6 +174,21 @@ class ARC_ArsenalFilterBar
 			size.SetHeightOverride(BUTTON_HEIGHT);
 			if (SIDEBAR)
 				size.SetWidthOverride(SIDEBAR_WIDTH);
+		}
+
+		ImageWidget image = ImageWidget.Cast(buttonWidget.FindAnyWidget("Image0"));
+		if (image)
+		{
+			if (categoryIndex == ALL_INDEX)
+				image.LoadImageFromSet(0, ICON_IMAGESET, ICON_ALL);
+			else if (categoryIndex == OTHER_INDEX)
+				image.LoadImageFromSet(0, ICON_IMAGESET, ICON_OTHER);
+			else if (!icon.IsEmpty())
+				image.LoadImageTexture(0, icon);
+			else
+				image.SetVisible(false);
+
+			image.SetSize(ICON_SIZE, ICON_SIZE);
 		}
 
 		button.SetText(label);

@@ -14,6 +14,9 @@ class ARC_ArsenalCategory
 	[Attribute("", UIWidgets.EditBox, "Button caption")]
 	protected string m_sName;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Button icon (.edds). Empty = no icon", params: "edds")]
+	protected ResourceName m_sIcon;
+
 	[Attribute("0", UIWidgets.Flags, "Arsenal item types included. 0 = any type", enums: ParamEnumArray.FromEnum(SCR_EArsenalItemType))]
 	protected SCR_EArsenalItemType m_eItemTypes;
 
@@ -30,6 +33,12 @@ class ARC_ArsenalCategory
 	string GetName()
 	{
 		return m_sName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	ResourceName GetIcon()
+	{
+		return m_sIcon;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -72,10 +81,11 @@ class ARC_ArsenalCategory
 
 	//------------------------------------------------------------------------------------------------
 	//! Script-side constructor used for the built-in defaults when no config is available.
-	static ARC_ArsenalCategory Create(string name, SCR_EArsenalItemType types, SCR_EArsenalItemMode modes, array<string> prefabContains = null, array<string> prefabExcludes = null)
+	static ARC_ArsenalCategory Create(string name, ResourceName icon, SCR_EArsenalItemType types, SCR_EArsenalItemMode modes, array<string> prefabContains = null, array<string> prefabExcludes = null)
 	{
 		ARC_ArsenalCategory category = new ARC_ArsenalCategory();
 		category.m_sName = name;
+		category.m_sIcon = icon;
 		category.m_eItemTypes = types;
 		category.m_eItemModes = modes;
 		category.m_aPrefabContains = {};

@@ -15,7 +15,7 @@ Load it on the server like any other addon; clients receive it automatically. It
 - Shows a category column to the left of the arsenal panel (the "Open Arsenal" view); the grid stays where it is and is filtered by the selected button. (`ARC_ArsenalFilterBar.SIDEBAR = false` stacks the buttons above the grid instead.) Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
 - Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
-- Buttons are the vanilla `WLib_ButtonText` widget, so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
+- Buttons are the vanilla `WLib_ButtonTextImage` widget (icon + caption), so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
 
 ## Customising the categories
 
@@ -24,6 +24,7 @@ Categories are data: `Configs/ArsenalCategories/ARC_ArsenalCategories.conf`. Eac
 | Field | Meaning |
 |---|---|
 | `m_sName` | Button caption |
+| `m_sIcon` | Button icon (`.edds`); the defaults reuse the vanilla arsenal icons |
 | `m_eItemTypes` | `SCR_EArsenalItemType` flags the category includes |
 | `m_eItemModes` | `SCR_EArsenalItemMode` flags the category includes |
 | `m_aPrefabContains` | Prefab path must contain one of these substrings (case-insensitive) |
@@ -41,9 +42,9 @@ To ship different categories in your own addon, override this config (Resource B
 
 ```
 Scripts/Game/ArsenalCategories/
-  ARC_ArsenalCategory.c                  one category: name, type/mode masks, prefab-name rules
+  ARC_ArsenalCategory.c                  one category: name, icon, type/mode masks, prefab-name rules
   ARC_ArsenalCategoryConfig.c            config root + built-in defaults
-  ARC_ArsenalFilterBar.c                 builds the button column from vanilla WLib_ButtonText
+  ARC_ArsenalFilterBar.c                 builds the icon+text button column from vanilla WLib_ButtonTextImage
   ARC_ArsenalFilterController.c          shared: selection state, bar lifecycle, filtered item list
   ARC_InventoryStorageLootUI.c           modded Vicinity panel (arsenal browsed in place)
   ARC_InventoryOpenedStorageArsenalUI.c  modded standalone arsenal column

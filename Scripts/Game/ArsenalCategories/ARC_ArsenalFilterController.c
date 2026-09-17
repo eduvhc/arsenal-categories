@@ -150,8 +150,10 @@ class ARC_ArsenalFilterController
 		}
 
 		array<string> labels = {};
+		array<ResourceName> icons = {};
 		array<int> indices = {};
 		labels.Insert(string.Format("All (%1)", arsenalItems.Count()));
+		icons.Insert(ResourceName.Empty);
 		indices.Insert(ARC_ArsenalFilterBar.ALL_INDEX);
 
 		foreach (int i, ARC_ArsenalCategory category : categories)
@@ -160,12 +162,14 @@ class ARC_ArsenalFilterController
 				continue;
 
 			labels.Insert(string.Format("%1 (%2)", category.GetName(), counts[i]));
+			icons.Insert(category.GetIcon());
 			indices.Insert(i);
 		}
 
 		if (otherCount > 0)
 		{
 			labels.Insert(string.Format("Other (%1)", otherCount));
+			icons.Insert(ResourceName.Empty);
 			indices.Insert(ARC_ArsenalFilterBar.OTHER_INDEX);
 		}
 
@@ -175,7 +179,7 @@ class ARC_ArsenalFilterController
 		if (labels.Count() < 3)
 			return;
 
-		m_FilterBar = new ARC_ArsenalFilterBar(panelRoot, labels, indices);
+		m_FilterBar = new ARC_ArsenalFilterBar(panelRoot, labels, icons, indices);
 		if (!m_FilterBar.IsValid())
 		{
 			Print("[ARC] Filter list widgets could not be created", LogLevel.WARNING);
