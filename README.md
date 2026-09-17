@@ -31,7 +31,7 @@ On first start the server writes its current categories to
 $profile:ArsenalCategories/categories.json
 ```
 
-(the `-profile` directory of a dedicated server; `Documents\My Games\ArmaReforger\profile` for a hosted game). Edit it, restart the scenario, and every player receives the new list when they spawn — clients never need to touch anything. A copy of the default file is in `Docs/categories.example.json`. Invalid JSON or an unknown type/mode name is reported in the server log (`[ARC] ...`) and the file is not pushed, so a typo can never break the arsenal; players fall back to the addon's built-in list.
+(the `-profile` directory of a dedicated server; `Documents\My Games\ArmaReforger\profile` for a hosted game or Workbench play). The generated file already contains every default category and an empty `"visibility": []`, so it doubles as the reference for the format. Edit it, restart the scenario, and every player receives the new list when they spawn — clients never need to touch anything. A copy of the default file is in `Docs/categories.example.json`. Invalid JSON or an unknown type/mode name is reported in the server log (`[ARC] ...`) and the file is not pushed, so a typo can never break the arsenal; players fall back to the addon's built-in list.
 
 ```json
 {
@@ -86,14 +86,16 @@ The same file can take a `"visibility"` array. Rules are checked top to bottom, 
 
 Reads as: keep vanilla medical/map/compass/flashlight/radio/binoculars/watch, keep everything from RHS and Simple GPS, hide the rest.
 
-More recipes:
+More recipes (each is one entry of the `visibility` array):
 
-```json
-{ "action": "hide", "prefabContains": ["Rangefinder_Vector21"] }           // one specific item
-{ "action": "hide", "itemTypes": ["ROCKET_LAUNCHER"], "addons": ["ArmaReforger"] }   // vanilla launchers only
-{ "action": "hide", "addonsExclude": ["RHS_Core", "RHS_Content_01", "RHS_Content_02"] } // anything not RHS, no exceptions
-{ "action": "show", "prefabContains": ["_lc.et"] }, { "action": "hide", "prefabContains": ["Rangefinder"] } // keep low-cost variant, hide the rest
-```
+| Goal | Rule |
+|---|---|
+| Hide one specific item | `{ "action": "hide", "prefabContains": ["Rangefinder_Vector21"] }` |
+| Hide vanilla launchers only | `{ "action": "hide", "itemTypes": ["ROCKET_LAUNCHER"], "addons": ["ArmaReforger"] }` |
+| Anything not RHS, no exceptions | `{ "action": "hide", "addonsExclude": ["RHS_Core", "RHS_Content_01", "RHS_Content_02"] }` |
+| Keep the low-cost variant, hide the rest | `{ "action": "show", "prefabContains": ["_lc.et"] }` followed by `{ "action": "hide", "prefabContains": ["Rangefinder"] }` |
+
+JSON rules: no comments, no trailing comma after the last entry, strings in double quotes. If the file is rejected, the server log shows the reason (`[ARC] ...`) and the previous behaviour stays; the file is never rewritten by the mod once it exists, so your edits are safe.
 
 To find an item's addon or path: the prefab path is what the arsenal shows in the Workbench catalog (`Configs/EntityCatalog/...`); the addon ID is in that addon's `addon.gproj`.
 
