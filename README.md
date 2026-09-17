@@ -14,7 +14,7 @@ Load it on the server like any other addon; clients receive it automatically. It
 
 - Inserts a filter bar into the arsenal storage panel (the "Open Arsenal" view). Only categories that actually contain something in that arsenal get a button; an *Other* button appears when items match no category.
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
-- The storage title shows the active category and item count, e.g. `Arsenal - Weapons (42)`.
+- Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
 - Buttons are the vanilla `WLib_ButtonFilter` widget, so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
 
 ## Customising the categories
@@ -41,7 +41,9 @@ Scripts/Game/ArsenalCategories/
   ARC_ArsenalCategory.c                  one category: name, icon, type/mode masks
   ARC_ArsenalCategoryConfig.c            config root + built-in defaults
   ARC_ArsenalFilterBar.c                 builds the button row from vanilla WLib_ButtonFilter
-  ARC_InventoryOpenedStorageArsenalUI.c  modded arsenal panel: creates the bar, filters GetAllItems()
+  ARC_ArsenalFilterController.c          shared: selection state, bar lifecycle, filtered item list
+  ARC_InventoryStorageLootUI.c           modded Vicinity panel (arsenal browsed in place)
+  ARC_InventoryOpenedStorageArsenalUI.c  modded standalone arsenal column
 Configs/ArsenalCategories/
   ARC_ArsenalCategories.conf             the shipped categories
 ```
@@ -52,7 +54,7 @@ Everything new is prefixed `ARC_`, including the members added to the modded cla
 
 1. Script Editor → **Validate Scripts (F7)**.
 2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla) and add two prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. `MpTest_Basic` already contains a faction manager; do not add a second one (`Multiple faction managers present!`). Without a game mode every arsenal is empty (`needs a entity catalog manager!` in the log).
-3. **Play**, walk to the box, *Open Arsenal*. The filter bar sits between the panel header and the grid. Click through the categories; the title shows the count. Clicking the active category keeps it active.
+3. **Play**, walk to the box, *Open Arsenal*. The filter bar sits right under the "Arsenal" title, above the grid. Click through the categories. Clicking the active category keeps it active.
 4. Check the Log Console for `[ARC]` warnings — none should appear.
 5. For RHS or other content mods, open the project with those addons (*Open with Addons*) and repeat with their arsenal boxes.
 

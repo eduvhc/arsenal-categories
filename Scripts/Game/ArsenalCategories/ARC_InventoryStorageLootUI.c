@@ -1,6 +1,7 @@
-//! Arsenal opened as its own column (the "Open" action on a storage), as opposed to being browsed
-//! through the Vicinity panel. Same controller, different refresh hooks.
-modded class SCR_InventoryOpenedStorageArsenalUI
+//! The "Vicinity" panel. Opening an arsenal from the world traverses this panel into the arsenal
+//! storage, so this is where players normally see the flat item grid. The filter bar is rebuilt
+//! after every FillItemsFromStorage() so it sits right under the "Arsenal" traverse title.
+modded class SCR_InventoryStorageLootUI
 {
 	protected ref ARC_ArsenalFilterController m_ARC_Filter;
 
@@ -11,8 +12,6 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 		m_ARC_Filter.m_OnCategoryChanged.Insert(ARC_OnCategoryChanged);
 
 		super.HandlerAttached(w);
-
-		ARC_Sync();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -29,19 +28,11 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override void Refresh()
-	{
-		super.Refresh();
-
-		ARC_Sync();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	override protected void GetAllItems(out notnull array<IEntity> pItemsInStorage, BaseInventoryStorageComponent pStorage = null)
 	{
-		if (!pStorage && m_ARC_Filter && m_ARC_Filter.IsFiltering())
+		if (m_ARC_Filter && m_ARC_Filter.IsFiltering())
 		{
-			SCR_ArsenalComponent arsenal = ARC_ArsenalFilterController.FindArsenal(m_Storage);
+			SCR_ArsenalComponent arsenal = ARC_ArsenalFilterController.FindArsenal(pStorage);
 			if (arsenal && m_ARC_Filter.GetItems(arsenal, pItemsInStorage))
 				return;
 		}
@@ -50,19 +41,21 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void ARC_Sync()
+	override protected void FillItemsFromStorage(BaseInventoryStorageComponent storage)
 	{
-		if (!m_ARC_Filter || !m_widget)
-			return;
+		super.FillItemsFromStorage(storage);
 
-		// Only the root arsenal listing gets a bar; a nested storage shows its own contents.
-		if (m_aTraverseStorage.Count() > 1)
-		{
+		if (m_ARC_Filter && m_widget)
+			m_ARC_Filter.Sync(m_widget.FindAnyWidget("titleLayout"), GetCurrentNavigationStorage());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Home()
+	{
+		super.Home();
+
+		if (m_ARC_Filter)
 			m_ARC_Filter.Sync(null, null);
-			return;
-		}
-
-		m_ARC_Filter.Sync(m_widget.FindAnyWidget("titleLayout"), m_Storage);
 	}
 
 	//------------------------------------------------------------------------------------------------
