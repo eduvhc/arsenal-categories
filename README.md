@@ -51,7 +51,7 @@ Everything new is prefixed `ARC_`, including the members added to the modded cla
 ## Testing in Workbench
 
 1. Script Editor → **Validate Scripts (F7)**.
-2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla) and add three prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/MP/Managers/Factions/FactionManager_USxUSSR.et` and `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. Without the game mode and faction manager every arsenal is empty (`needs a entity catalog manager!` in the log).
+2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla) and add two prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. `MpTest_Basic` already contains a faction manager; do not add a second one (`Multiple faction managers present!`). Without a game mode every arsenal is empty (`needs a entity catalog manager!` in the log).
 3. **Play**, walk to the box, *Open Arsenal*. The filter bar sits between the panel header and the grid. Click through the categories; the title shows the count. Clicking the active category keeps it active.
 4. Check the Log Console for `[ARC]` warnings — none should appear.
 5. For RHS or other content mods, open the project with those addons (*Open with Addons*) and repeat with their arsenal boxes.

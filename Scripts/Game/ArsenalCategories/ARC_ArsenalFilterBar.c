@@ -30,9 +30,10 @@ class ARC_ArsenalFilterBar
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		m_wRoot = workspace.CreateWidget(WidgetType.HorizontalLayoutWidgetTypeID, WidgetFlags.VISIBLE, new Color(1, 1, 1, 1), 0, parent);
 		if (!m_wRoot)
+		{
+			Print("[ARC] CreateWidget(HorizontalLayout) returned null", LogLevel.WARNING);
 			return;
-
-		LayoutSlot.SetPadding(m_wRoot, 0, 2, 0, 4);
+		}
 
 		AddButton(ALL_INDEX, ResourceName.Empty, ICON_ALL);
 
@@ -47,6 +48,14 @@ class ARC_ArsenalFilterBar
 			AddButton(OTHER_INDEX, ResourceName.Empty, ICON_OTHER);
 
 		Select(ALL_INDEX, false);
+		PrintFormat("[ARC] Filter bar created with %1 button(s)", m_aButtons.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! eturn true when the container and at least the "All" button exist
+	bool IsValid()
+	{
+		return m_wRoot && !m_aButtons.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -89,11 +98,15 @@ class ARC_ArsenalFilterBar
 	{
 		Widget buttonWidget = GetGame().GetWorkspace().CreateWidgets(BUTTON_LAYOUT, m_wRoot);
 		if (!buttonWidget)
+		{
+			Print("[ARC] Could not create WLib_ButtonFilter widget", LogLevel.WARNING);
 			return;
+		}
 
 		SCR_ButtonImageComponent button = SCR_ButtonImageComponent.Cast(buttonWidget.FindHandler(SCR_ButtonImageComponent));
 		if (!button)
 		{
+			Print("[ARC] WLib_ButtonFilter has no SCR_ButtonImageComponent handler", LogLevel.WARNING);
 			buttonWidget.RemoveFromHierarchy();
 			return;
 		}
@@ -106,7 +119,7 @@ class ARC_ArsenalFilterBar
 			size.SetHeightOverride(BUTTON_SIZE);
 		}
 
-		LayoutSlot.SetPadding(buttonWidget, 0, 0, BUTTON_SPACING, 0);
+		HorizontalLayoutSlot.SetPadding(buttonWidget, 0, 0, BUTTON_SPACING, 0);
 
 		if (icon.IsEmpty() || icon.EndsWith(".imageset"))
 		{

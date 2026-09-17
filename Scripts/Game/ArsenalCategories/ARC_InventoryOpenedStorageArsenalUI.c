@@ -68,11 +68,17 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 			return;
 		}
 
+		Print("[ARC] Arsenal panel attached; building filter bar");
+
 		m_ARC_Config = ARC_ArsenalCategoryConfig.Load();
 		array<ref ARC_ArsenalCategory> categories = m_ARC_Config.GetCategories();
 
 		array<SCR_ArsenalItem> arsenalItems = {};
-		ARC_GetArsenalItems(arsenalItems);
+		if (!ARC_GetArsenalItems(arsenalItems))
+		{
+			Print("[ARC] No arsenal items available yet; filter bar disabled", LogLevel.WARNING);
+			return;
+		}
 
 		array<int> available = {};
 		bool hasOther = false;
@@ -85,8 +91,14 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 				available.Insert(category);
 		}
 
+		int buttonCount = available.Count();
+		if (hasOther)
+			buttonCount++;
+
+		PrintFormat("[ARC] %1 item(s), %2 category button(s)", arsenalItems.Count(), buttonCount);
+
 		// One category (or none) gives the player nothing to choose; keep the panel untouched.
-		if (available.Count() + hasOther < 2)
+		if (buttonCount < 2)
 			return;
 
 		available.Sort();
@@ -95,6 +107,13 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 			m_sARC_StorageName = m_wStorageName.GetText();
 
 		m_ARC_FilterBar = new ARC_ArsenalFilterBar(host, categories, available, hasOther);
+		if (!m_ARC_FilterBar.IsValid())
+		{
+			Print("[ARC] Filter bar widgets could not be created", LogLevel.WARNING);
+			m_ARC_FilterBar = null;
+			return;
+		}
+
 		m_ARC_FilterBar.m_OnCategoryChanged.Insert(ARC_OnCategoryChanged);
 	}
 
