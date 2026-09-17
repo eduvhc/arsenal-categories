@@ -1,6 +1,8 @@
-//! Ordered list of categories shown in the arsenal filter list.
-//! Edit Configs/ArsenalCategories/ARC_ArsenalCategories.conf in Workbench to change them; if the
-//! config cannot be loaded the built-in defaults below are used and a warning is logged.
+//! Ordered list of categories shown in the arsenal filter list. Sources, first one that works wins:
+//!   1. JSON pushed by the server (its $profile:ArsenalCategories/categories.json) - see ARC_PlayerController
+//!   2. the local $profile:ArsenalCategories/categories.json (single player, testing)
+//!   3. Configs/ArsenalCategories/ARC_ArsenalCategories.conf (edit in Workbench, overridable by mods)
+//!   4. the built-in defaults below
 [BaseContainerProps(configRoot: true)]
 class ARC_ArsenalCategoryConfig
 {
@@ -24,6 +26,15 @@ class ARC_ArsenalCategoryConfig
 	[Attribute("", UIWidgets.Object, "Categories in display order; first match wins")]
 	protected ref array<ref ARC_ArsenalCategory> m_aCategories;
 
+	protected static string s_sServerJson;
+
+	//------------------------------------------------------------------------------------------------
+	//! Called on the client when the server has pushed its categories.json.
+	static void SetServerJson(string json)
+	{
+		s_sServerJson = json;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	array<ref ARC_ArsenalCategory> GetCategories()
 	{
@@ -34,6 +45,19 @@ class ARC_ArsenalCategoryConfig
 	//! Load the shipped config, or fall back to the defaults so the filter list always works.
 	static ARC_ArsenalCategoryConfig Load()
 	{
+		array<ref ARC_ArsenalCategory> jsonCategories = {};
+		if (!s_sServerJson.IsEmpty() && ARC_CategoryJson.Parse(s_sServerJson, jsonCategories))
+		{
+			Print("[ARC] Using categories pushed by the server");
+			return FromCategories(jsonCategories);
+		}
+
+		if (ARC_CategoryJson.LoadFile(ARC_CategoryJson.FILE_PATH, jsonCategories))
+		{
+			Print("[ARC] Using categories from " + ARC_CategoryJson.FILE_PATH);
+			return FromCategories(jsonCategories);
+		}
+
 		Resource resource = Resource.Load(CONFIG_PATH);
 		if (resource && resource.IsValid())
 		{
@@ -44,6 +68,15 @@ class ARC_ArsenalCategoryConfig
 
 		Print("[ARC] Category config unavailable; using built-in defaults", LogLevel.WARNING);
 		return CreateDefault();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static ARC_ArsenalCategoryConfig FromCategories(notnull array<ref ARC_ArsenalCategory> categories)
+	{
+		ARC_ArsenalCategoryConfig config = new ARC_ArsenalCategoryConfig();
+		config.m_aCategories = {};
+		config.m_aCategories.Copy(categories);
+		return config;
 	}
 
 	//------------------------------------------------------------------------------------------------

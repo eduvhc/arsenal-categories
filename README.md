@@ -20,7 +20,47 @@ Load it on the server like any other addon; clients receive it automatically. It
 
 ## Customising the categories
 
-Categories are data: `Configs/ArsenalCategories/ARC_ArsenalCategories.conf`. Each entry is a name plus rules; an item must satisfy all of them (a mask of 0 / an empty list means "any"):
+### Server admins: JSON, no Workbench needed
+
+On first start the server writes its current categories to
+
+```text
+$profile:ArsenalCategories/categories.json
+```
+
+(the `-profile` directory of a dedicated server; `Documents\My Games\ArmaReforger\profile` for a hosted game). Edit it, restart the scenario, and every player receives the new list when they spawn — clients never need to touch anything. A copy of the default file is in `Docs/categories.example.json`. Invalid JSON or an unknown type/mode name is reported in the server log (`[ARC] ...`) and the file is not pushed, so a typo can never break the arsenal; players fall back to the addon's built-in list.
+
+```json
+{
+  "categories": [
+    {
+      "name": "Submachine Guns",
+      "icon": "{71648F15B3984B87}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_AssaultRifles.edds",
+      "itemTypes": ["RIFLE"],
+      "itemModes": ["WEAPON", "WEAPON_VARIANTS"],
+      "prefabContains": ["smg", "_mp5", "mpx"],
+      "prefabExcludes": []
+    }
+  ]
+}
+```
+
+| Key | Meaning |
+|---|---|
+| `name` | Button caption |
+| `icon` | Icon resource (`{GUID}path.edds`); reuse the vanilla arsenal icons from the example, or `""` for none |
+| `itemTypes` | `SCR_EArsenalItemType` names; `[]` = any type |
+| `itemModes` | `SCR_EArsenalItemMode` names; `[]` = any mode |
+| `prefabContains` | Prefab path must contain one of these (case-insensitive); `[]` = any |
+| `prefabExcludes` | Prefab path must contain none of these |
+
+Types: `RIFLE PISTOL LETHAL_THROWABLE ROCKET_LAUNCHER MACHINE_GUN HEAL BACKPACK SNIPER_RIFLE NON_LETHAL_THROWABLE HEADWEAR TORSO VEST_AND_WAIST LEGS FOOTWEAR RADIO_BACKPACK EQUIPMENT WEAPON_ATTACHMENT EXPLOSIVES HANDWEAR MORTARS HELICOPTER VEHICLE`. Modes: `DEFAULT WEAPON WEAPON_VARIANTS AMMUNITION CONSUMABLE ATTACHMENT SUPPORT_STATION PYLON`.
+
+The same file in a client's own profile is used in single player, or when the server does not push one.
+
+### Modders: the .conf
+
+Categories also exist as `Configs/ArsenalCategories/ARC_ArsenalCategories.conf` (used when no JSON is available). Each entry is a name plus rules; an item must satisfy all of them (a mask of 0 / an empty list means "any"):
 
 | Field | Meaning |
 |---|---|
@@ -43,6 +83,9 @@ To ship different categories in your own addon, override this config (Resource B
 
 ```
 Scripts/Game/ArsenalCategories/
+  ARC_BaseGameMode.c                     server: writes/loads categories.json, pushes it on spawn
+  ARC_PlayerController.c                 server->client transport for the JSON (chunked RPC)
+  ARC_CategoryJson.c                     JSON parse/write, enum names <-> flags
   ARC_ArsenalCategory.c                  one category: name, icon, type/mode masks, prefab-name rules
   ARC_ArsenalCategoryConfig.c            config root + built-in defaults
   ARC_ArsenalFilterBar.c                 builds the icon+text button column from vanilla WLib_ButtonTextImage
@@ -62,7 +105,7 @@ Everything new is prefixed `ARC_`, including the members added to the modded cla
 1. Script Editor → **Validate Scripts (F7)**.
 2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla), create a sub-scene, and add three prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/MP/Managers/Factions/FactionManager_USxUSSR.et` and `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. Without the game mode every arsenal is empty (`needs a entity catalog manager!`); without exactly one faction manager the game mode crashes on init (`NULL pointer … m_FactionManager`) or complains `Multiple faction managers present!`.
 3. **Play**, walk to the box, *Open Arsenal*. The category column appears to the left of the grid, under the "Arsenal" title. Click through the categories; counts add up to All. Clicking the active category keeps it active.
-4. Check the Log Console for `[ARC]` warnings — none should appear.
+4. Check the Log Console for `[ARC]`: expect `Server categories loaded`, `Received server categories`, `Using categories pushed by the server`, and no warnings.
 5. For RHS or other content mods, open the project with those addons (*Open with Addons*) and repeat with their arsenal boxes.
 
 ## License

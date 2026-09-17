@@ -42,6 +42,30 @@ class ARC_ArsenalCategory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	SCR_EArsenalItemType GetItemTypes()
+	{
+		return m_eItemTypes;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	SCR_EArsenalItemMode GetItemModes()
+	{
+		return m_eItemModes;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<string> GetPrefabContains()
+	{
+		return m_aPrefabContains;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<string> GetPrefabExcludes()
+	{
+		return m_aPrefabExcludes;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return true when the arsenal item belongs to this category
 	bool Matches(notnull SCR_ArsenalItem item)
 	{

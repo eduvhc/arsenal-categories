@@ -1,0 +1,185 @@
+{
+  "categories": [
+    {
+      "name": "Submachine Guns",
+      "icon": "{71648F15B3984B87}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_AssaultRifles.edds",
+      "itemTypes": [
+        "RIFLE"
+      ],
+      "itemModes": [
+        "WEAPON",
+        "WEAPON_VARIANTS"
+      ],
+      "prefabContains": [
+        "smg",
+        "_mp5",
+        "mpx",
+        "ump",
+        "vityaz",
+        "pp19",
+        "pp2000",
+        "ppsh",
+        "uzi",
+        "vector",
+        "p90",
+        "mp7",
+        "kedr",
+        "bizon"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Assault Rifles",
+      "icon": "{71648F15B3984B87}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_AssaultRifles.edds",
+      "itemTypes": [
+        "RIFLE"
+      ],
+      "itemModes": [
+        "WEAPON",
+        "WEAPON_VARIANTS"
+      ],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Sniper Rifles",
+      "icon": "{A2B4C0BFBECE6400}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_SniperRifles.edds",
+      "itemTypes": [
+        "SNIPER_RIFLE"
+      ],
+      "itemModes": [
+        "WEAPON",
+        "WEAPON_VARIANTS"
+      ],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Machine Guns",
+      "icon": "{A02EB3B80E276400}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_MachineGuns.edds",
+      "itemTypes": [
+        "MACHINE_GUN"
+      ],
+      "itemModes": [
+        "WEAPON",
+        "WEAPON_VARIANTS"
+      ],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Pistols",
+      "icon": "{2EEBBBCA36DD775F}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Pistols.edds",
+      "itemTypes": [
+        "PISTOL"
+      ],
+      "itemModes": [
+        "WEAPON",
+        "WEAPON_VARIANTS"
+      ],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Launchers",
+      "icon": "{10840233D666C940}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Launcher.edds",
+      "itemTypes": [
+        "ROCKET_LAUNCHER",
+        "MORTARS"
+      ],
+      "itemModes": [
+        "WEAPON",
+        "WEAPON_VARIANTS"
+      ],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Ammunition",
+      "icon": "{A3D157619860A564}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Magazines.edds",
+      "itemTypes": [],
+      "itemModes": [
+        "AMMUNITION"
+      ],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Attachments",
+      "icon": "{CB055708E982C0A5}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Optics.edds",
+      "itemTypes": [],
+      "itemModes": [
+        "ATTACHMENT"
+      ],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Throwables",
+      "icon": "{233A8BC0520B1B8B}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Grenades.edds",
+      "itemTypes": [
+        "LETHAL_THROWABLE",
+        "NON_LETHAL_THROWABLE"
+      ],
+      "itemModes": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Explosives",
+      "icon": "{91C4A9B5AD80D443}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Explosive.edds",
+      "itemTypes": [
+        "EXPLOSIVES"
+      ],
+      "itemModes": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Clothing",
+      "icon": "{92245C15E122EDB2}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Jackets.edds",
+      "itemTypes": [
+        "HEADWEAR",
+        "TORSO",
+        "LEGS",
+        "FOOTWEAR",
+        "HANDWEAR"
+      ],
+      "itemModes": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Vests and Backpacks",
+      "icon": "{2DCA69EEB8628C06}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Vests.edds",
+      "itemTypes": [
+        "VEST_AND_WAIST",
+        "BACKPACK",
+        "RADIO_BACKPACK"
+      ],
+      "itemModes": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Medical",
+      "icon": "{CDF868B16669B7EA}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Medical.edds",
+      "itemTypes": [
+        "HEAL"
+      ],
+      "itemModes": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Equipment",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [
+        "EQUIPMENT"
+      ],
+      "itemModes": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    }
+  ]
+}
