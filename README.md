@@ -2,7 +2,7 @@
 
 A small, open-source filter bar for the Arma Reforger arsenal panel.
 
-Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category list above that grid — *All, Submachine Guns, Assault Rifles, Sniper Rifles, Machine Guns, Pistols, Launchers, Ammunition, Attachments, Throwables, Explosives, Clothing, Vests and Backpacks, Medical, Equipment* — each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
+Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category column beside that grid — *All, Submachine Guns, Assault Rifles, Sniper Rifles, Machine Guns, Pistols, Launchers, Ammunition, Attachments, Throwables, Explosives, Clothing, Vests and Backpacks, Medical, Equipment* — each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
 
 ## Requirements
 
@@ -41,9 +41,9 @@ To ship different categories in your own addon, override this config (Resource B
 
 ```
 Scripts/Game/ArsenalCategories/
-  ARC_ArsenalCategory.c                  one category: name, icon, type/mode masks
+  ARC_ArsenalCategory.c                  one category: name, type/mode masks, prefab-name rules
   ARC_ArsenalCategoryConfig.c            config root + built-in defaults
-  ARC_ArsenalFilterBar.c                 builds the button row from vanilla WLib_ButtonFilter
+  ARC_ArsenalFilterBar.c                 builds the button column from vanilla WLib_ButtonText
   ARC_ArsenalFilterController.c          shared: selection state, bar lifecycle, filtered item list
   ARC_InventoryStorageLootUI.c           modded Vicinity panel (arsenal browsed in place)
   ARC_InventoryOpenedStorageArsenalUI.c  modded standalone arsenal column
@@ -56,7 +56,7 @@ Everything new is prefixed `ARC_`, including the members added to the modded cla
 ## Testing in Workbench
 
 1. Script Editor → **Validate Scripts (F7)**.
-2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla) and add two prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. `MpTest_Basic` already contains a faction manager; do not add a second one (`Multiple faction managers present!`). Without a game mode every arsenal is empty (`needs a entity catalog manager!` in the log).
+2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla), create a sub-scene, and add three prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/MP/Managers/Factions/FactionManager_USxUSSR.et` and `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. Without the game mode every arsenal is empty (`needs a entity catalog manager!`); without exactly one faction manager the game mode crashes on init (`NULL pointer … m_FactionManager`) or complains `Multiple faction managers present!`.
 3. **Play**, walk to the box, *Open Arsenal*. The category column appears to the left of the Vicinity panel. Click through the categories; counts add up to All. Clicking the active category keeps it active.
 4. Check the Log Console for `[ARC]` warnings — none should appear.
 5. For RHS or other content mods, open the project with those addons (*Open with Addons*) and repeat with their arsenal boxes.
