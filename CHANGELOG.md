@@ -1,5 +1,8 @@
 # Changelog
 
-## 0.1.0
+## 1.0.0
 
-- Initial release: category filter bar for the arsenal storage panel, data-driven categories with built-in defaults.
+- Category sidebar (WCS-style) left of the arsenal grid, icon + caption + item count per category; Vicinity panel and standalone arsenal column.
+- 14 default categories incl. Submachine Guns by prefab name; data-driven via .conf.
+- Server JSON (`$profile:ArsenalCategories/categories.json`) pushed to clients on spawn; client JSON fallback.
+- Server-enforced visibility rules (show/hide by addon, item type, mode, prefab path).

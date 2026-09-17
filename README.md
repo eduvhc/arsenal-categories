@@ -1,6 +1,8 @@
 # Arsenal Categories
 
-A small, open-source filter bar for the Arma Reforger arsenal panel.
+A small, open-source category sidebar and item-visibility filter for the Arma Reforger arsenal panel.
+
+Source: https://github.com/eduvhc/arsenal-categories
 
 Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category column next to that grid — *All, Submachine Guns, Assault Rifles, Sniper Rifles, Machine Guns, Pistols, Launchers, Ammunition, Attachments, Throwables, Explosives, Clothing, Vests and Backpacks, Medical, Equipment* — each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
 
