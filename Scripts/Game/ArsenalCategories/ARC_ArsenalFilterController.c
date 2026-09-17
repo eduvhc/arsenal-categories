@@ -16,7 +16,7 @@ class ARC_ArsenalFilterController
 	//------------------------------------------------------------------------------------------------
 	void ARC_ArsenalFilterController()
 	{
-		m_Config = ARC_ArsenalCategoryConfig.Load();
+		m_Config = ARC_ArsenalCategoryConfig.GetActive();
 	}
 
 	//------------------------------------------------------------------------------------------------

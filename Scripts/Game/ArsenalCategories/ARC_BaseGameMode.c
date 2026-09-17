@@ -48,13 +48,17 @@ modded class SCR_BaseGameMode
 
 		// Validate before pushing: a broken file is reported here, on the server, and not sent at all.
 		array<ref ARC_ArsenalCategory> categories = {};
-		if (!ARC_CategoryJson.LoadFile(ARC_CategoryJson.FILE_PATH, categories))
+		array<ref ARC_VisibilityRule> rules = {};
+		if (!ARC_CategoryJson.LoadFile(ARC_CategoryJson.FILE_PATH, categories, rules))
 		{
 			Print("[ARC] " + ARC_CategoryJson.FILE_PATH + " is unusable; clients use their own configuration", LogLevel.WARNING);
 			return;
 		}
 
 		m_sARC_ServerCategoriesJson = ARC_CategoryJson.ReadFileText(ARC_CategoryJson.FILE_PATH);
-		PrintFormat("[ARC] Server categories loaded: %1 categories, %2 chars", categories.Count(), m_sARC_ServerCategoriesJson.Length());
+		PrintFormat("[ARC] Server categories loaded: %1 categories, %2 visibility rules, %3 chars", categories.Count(), rules.Count(), m_sARC_ServerCategoriesJson.Length());
+
+		// The server enforces visibility in SCR_ArsenalComponent too, so it must use the same document.
+		ARC_ArsenalCategoryConfig.SetServerJson(m_sARC_ServerCategoriesJson);
 	}
 }

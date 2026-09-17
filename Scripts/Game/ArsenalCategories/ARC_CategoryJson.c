@@ -15,6 +15,17 @@
 //!
 //! itemTypes / itemModes use the SCR_EArsenalItemType / SCR_EArsenalItemMode names; an empty list
 //! means "any". Unknown names are reported and skipped. Same first-match semantics as the .conf.
+//!
+//! An optional "visibility" array hides items from every arsenal (enforced on the server too):
+//!
+//!   "visibility": [
+//!     { "action": "show", "prefabContains": ["/Medicine/", "/Maps/", "/Compass/"] },
+//!     { "action": "show", "addons": ["RHS_Core", "RHS_Content_01", "RHS_Content_02"] },
+//!     { "action": "hide" }
+//!   ]
+//!
+//! Rules are checked in order, first match decides, unmatched items are shown. Conditions:
+//! addons, addonsExclude (addon.gproj IDs), itemTypes, itemModes, prefabContains, prefabExcludes.
 class ARC_CategoryJson
 {
 	static const string FILE_PATH = "$profile:ArsenalCategories/categories.json";
@@ -23,7 +34,7 @@ class ARC_CategoryJson
 	//------------------------------------------------------------------------------------------------
 	//! Parse a JSON document into categories.
 	//! \return false when the document is invalid or contains no usable category
-	static bool Parse(string json, out notnull array<ref ARC_ArsenalCategory> categories)
+	static bool Parse(string json, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules)
 	{
 		JsonLoadContext context = new JsonLoadContext();
 		if (!context.LoadFromString(json))
@@ -32,13 +43,13 @@ class ARC_CategoryJson
 			return false;
 		}
 
-		return Read(context, categories);
+		return Read(context, categories, rules);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Load categories from a JSON file in the profile directory.
 	//! \return false when the file does not exist or is unusable
-	static bool LoadFile(string path, out notnull array<ref ARC_ArsenalCategory> categories)
+	static bool LoadFile(string path, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules)
 	{
 		if (!FileIO.FileExists(path))
 			return false;
@@ -50,7 +61,7 @@ class ARC_CategoryJson
 			return false;
 		}
 
-		return Read(context, categories);
+		return Read(context, categories, rules);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -78,7 +89,7 @@ class ARC_CategoryJson
 
 	//------------------------------------------------------------------------------------------------
 	//! Write categories as a JSON file, e.g. to give admins a template with the defaults.
-	static bool SaveFile(string path, notnull array<ref ARC_ArsenalCategory> categories)
+	static bool SaveFile(string path, notnull array<ref ARC_ArsenalCategory> categories, array<ref ARC_VisibilityRule> rules = null)
 	{
 		PrettyJsonSaveContext context = new PrettyJsonSaveContext();
 
@@ -112,6 +123,38 @@ class ARC_CategoryJson
 		}
 		context.EndArray();
 
+		int ruleCount;
+		if (rules)
+			ruleCount = rules.Count();
+
+		context.StartArray("visibility", ruleCount);
+		for (int i = 0; i < ruleCount; i++)
+		{
+			ARC_VisibilityRule rule = rules[i];
+			context.StartObject();
+
+			string action = "hide";
+			if (rule.IsShow())
+				action = "show";
+
+			context.WriteValue("action", action);
+			context.WriteValue("addons", rule.GetAddons());
+			context.WriteValue("addonsExclude", rule.GetAddonsExclude());
+
+			array<string> ruleTypes = {};
+			FlagsToNames(SCR_EArsenalItemType, rule.GetItemTypes(), ruleTypes);
+			context.WriteValue("itemTypes", ruleTypes);
+
+			array<string> ruleModes = {};
+			FlagsToNames(SCR_EArsenalItemMode, rule.GetItemModes(), ruleModes);
+			context.WriteValue("itemModes", ruleModes);
+
+			context.WriteValue("prefabContains", rule.GetPrefabContains());
+			context.WriteValue("prefabExcludes", rule.GetPrefabExcludes());
+			context.EndObject();
+		}
+		context.EndArray();
+
 		if (context.SaveToFile(path))
 			return true;
 
@@ -120,7 +163,7 @@ class ARC_CategoryJson
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Read(notnull JsonLoadContext context, out notnull array<ref ARC_ArsenalCategory> categories)
+	protected static bool Read(notnull JsonLoadContext context, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules)
 	{
 		int count;
 		if (!context.StartArray("categories", count))
@@ -168,7 +211,55 @@ class ARC_CategoryJson
 			return false;
 		}
 
+		ReadVisibility(context, rules);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Optional "visibility" array; absent = no rules.
+	protected static void ReadVisibility(notnull JsonLoadContext context, out notnull array<ref ARC_VisibilityRule> rules)
+	{
+		int count;
+		if (!context.StartArray("visibility", count))
+			return;
+
+		for (int i = 0; i < count; i++)
+		{
+			if (!context.StartObject())
+				break;
+
+			string action;
+			array<string> addons = {};
+			array<string> addonsExclude = {};
+			array<string> typeNames = {};
+			array<string> modeNames = {};
+			array<string> contains = {};
+			array<string> excludes = {};
+
+			context.ReadValue("action", action);
+			context.ReadValue("addons", addons);
+			context.ReadValue("addonsExclude", addonsExclude);
+			context.ReadValue("itemTypes", typeNames);
+			context.ReadValue("itemModes", modeNames);
+			context.ReadValue("prefabContains", contains);
+			context.ReadValue("prefabExcludes", excludes);
+			context.EndObject();
+
+			action.ToLower();
+			action.Trim();
+			if (action != "show" && action != "hide")
+			{
+				PrintFormat("[ARC] visibility[%1]: action must be show or hide (got %2); rule skipped", i, action, level: LogLevel.WARNING);
+				continue;
+			}
+
+			string ruleName = string.Format("visibility[%1]", i);
+			SCR_EArsenalItemType types = NamesToFlags(SCR_EArsenalItemType, typeNames, ruleName);
+			SCR_EArsenalItemMode modes = NamesToFlags(SCR_EArsenalItemMode, modeNames, ruleName);
+			rules.Insert(ARC_VisibilityRule.Create(action == "show", addons, addonsExclude, types, modes, contains, excludes));
+		}
+
+		context.EndArray();
 	}
 
 	//------------------------------------------------------------------------------------------------

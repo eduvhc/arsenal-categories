@@ -26,13 +26,76 @@ class ARC_ArsenalCategoryConfig
 	[Attribute("", UIWidgets.Object, "Categories in display order; first match wins")]
 	protected ref array<ref ARC_ArsenalCategory> m_aCategories;
 
+	//! Show/hide rules; JSON only. Empty = every item the arsenal offers is shown.
+	protected ref array<ref ARC_VisibilityRule> m_aVisibilityRules = {};
+
+	//! prefab -> addon IDs, filled lazily; loading a container per item is not free.
+	protected ref map<ResourceName, ref array<string>> m_mPrefabAddons = new map<ResourceName, ref array<string>>();
+
 	protected static string s_sServerJson;
+	protected static ref ARC_ArsenalCategoryConfig s_Active;
 
 	//------------------------------------------------------------------------------------------------
-	//! Called on the client when the server has pushed its categories.json.
+	//! Called when the server has pushed its categories.json (on clients), or on the server itself.
 	static void SetServerJson(string json)
 	{
 		s_sServerJson = json;
+		s_Active = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The configuration currently in force, loaded once and reused until a new server JSON arrives.
+	static ARC_ArsenalCategoryConfig GetActive()
+	{
+		if (!s_Active)
+			s_Active = Load();
+
+		return s_Active;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<ref ARC_VisibilityRule> GetVisibilityRules()
+	{
+		return m_aVisibilityRules;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetVisibilityRules(notnull array<ref ARC_VisibilityRule> rules)
+	{
+		m_aVisibilityRules.Copy(rules);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasVisibilityRules()
+	{
+		return !m_aVisibilityRules.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return false when a rule hides this item; items matching no rule are shown
+	bool IsVisible(notnull SCR_ArsenalItem item)
+	{
+		if (m_aVisibilityRules.IsEmpty())
+			return true;
+
+		ResourceName prefab = item.GetItemResourceName();
+		string lowerPath = prefab;
+		lowerPath.ToLower();
+
+		array<string> addons;
+		if (!m_mPrefabAddons.Find(prefab, addons))
+		{
+			addons = SCR_AddonTool.GetResourceAddons(prefab);
+			m_mPrefabAddons.Insert(prefab, addons);
+		}
+
+		foreach (ARC_VisibilityRule rule : m_aVisibilityRules)
+		{
+			if (rule && rule.Matches(item, lowerPath, addons))
+				return rule.IsShow();
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,16 +109,17 @@ class ARC_ArsenalCategoryConfig
 	static ARC_ArsenalCategoryConfig Load()
 	{
 		array<ref ARC_ArsenalCategory> jsonCategories = {};
-		if (!s_sServerJson.IsEmpty() && ARC_CategoryJson.Parse(s_sServerJson, jsonCategories))
+		array<ref ARC_VisibilityRule> jsonRules = {};
+		if (!s_sServerJson.IsEmpty() && ARC_CategoryJson.Parse(s_sServerJson, jsonCategories, jsonRules))
 		{
-			Print("[ARC] Using categories pushed by the server");
-			return FromCategories(jsonCategories);
+			PrintFormat("[ARC] Using categories pushed by the server (%1 categories, %2 visibility rules)", jsonCategories.Count(), jsonRules.Count());
+			return FromCategories(jsonCategories, jsonRules);
 		}
 
-		if (ARC_CategoryJson.LoadFile(ARC_CategoryJson.FILE_PATH, jsonCategories))
+		if (ARC_CategoryJson.LoadFile(ARC_CategoryJson.FILE_PATH, jsonCategories, jsonRules))
 		{
-			Print("[ARC] Using categories from " + ARC_CategoryJson.FILE_PATH);
-			return FromCategories(jsonCategories);
+			PrintFormat("[ARC] Using categories from %1 (%2 categories, %3 visibility rules)", ARC_CategoryJson.FILE_PATH, jsonCategories.Count(), jsonRules.Count());
+			return FromCategories(jsonCategories, jsonRules);
 		}
 
 		Resource resource = Resource.Load(CONFIG_PATH);
@@ -71,11 +135,14 @@ class ARC_ArsenalCategoryConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static ARC_ArsenalCategoryConfig FromCategories(notnull array<ref ARC_ArsenalCategory> categories)
+	static ARC_ArsenalCategoryConfig FromCategories(notnull array<ref ARC_ArsenalCategory> categories, array<ref ARC_VisibilityRule> rules = null)
 	{
 		ARC_ArsenalCategoryConfig config = new ARC_ArsenalCategoryConfig();
 		config.m_aCategories = {};
 		config.m_aCategories.Copy(categories);
+		if (rules)
+			config.SetVisibilityRules(rules);
+
 		return config;
 	}
 

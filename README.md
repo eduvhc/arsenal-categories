@@ -8,12 +8,13 @@ Vanilla lists every item an arsenal offers in one flat grid. This addon adds a c
 
 - Arma Reforger. No other dependency.
 
-Load it on the server like any other addon; clients receive it automatically. It only touches the client UI — nothing is changed on the server, in catalogs, prices or item availability, and it does not modify prefabs, so it coexists with arsenal content mods.
+Load it on the server like any other addon; clients receive it automatically. Without a `visibility` list it only touches the client UI — nothing changes in catalogs, prices or availability, and no prefabs are modified, so it coexists with arsenal content mods.
 
 ## What it does
 
 - Shows a category column to the left of the item grid inside the arsenal panel (the "Open Arsenal" view), WCS-style; the grid is filtered by the selected button. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
 - The column comes from an override of `UI/layouts/Menus/Inventory/InventoryContainerGrid.layout` that wraps the grid in a horizontal layout with a hidden `ARC_Sidebar` column (shown only while an arsenal is listed, so backpacks and crates look unchanged). If another mod replaces that layout, the buttons fall back to a two-column block above the grid — the feature never disappears.
+- Optional server-enforced hiding of items (e.g. RHS only, keep vanilla medical) via the same JSON.
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
 - Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
 - Buttons are the vanilla `WLib_ButtonTextImage` widget (icon + caption), so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
@@ -58,6 +59,42 @@ Types: `RIFLE PISTOL LETHAL_THROWABLE ROCKET_LAUNCHER MACHINE_GUN HEAL BACKPACK 
 
 The same file in a client's own profile is used in single player, or when the server does not push one.
 
+### Hiding items (server-enforced)
+
+The same file can take a `"visibility"` array. Rules are checked top to bottom, the **first matching rule decides**, and an item matching no rule is shown. A rule with no conditions matches everything. Filtering happens inside `SCR_ArsenalComponent` on the server as well as on clients, so a hidden item cannot be taken, bought or resupplied — it is not just hidden in the UI.
+
+| Key | Meaning |
+|---|---|
+| `action` | `"show"` or `"hide"` |
+| `addons` | Item comes from one of these addons — the `ID` in the addon's `addon.gproj` (`ArmaReforger`, `RHS_Core`, `RHS_Content_01`, `RHS_Content_02`, `NCMGPS` …) |
+| `addonsExclude` | Item comes from none of these addons |
+| `itemTypes`, `itemModes`, `prefabContains`, `prefabExcludes` | As for categories |
+
+**Only RHS gear, plus the vanilla essentials** (`Docs/categories.rhs-only.example.json`):
+
+```json
+"visibility": [
+  { "action": "show", "addons": ["ArmaReforger"],
+    "prefabContains": ["/Medicine/", "/Equipment/Maps/", "/Equipment/Compass/", "/Equipment/Flashlights/",
+                       "/Equipment/Radios/", "/Equipment/Binoculars/", "/Equipment/Watches/"] },
+  { "action": "show", "addons": ["RHS_Core", "RHS_Content_01", "RHS_Content_02", "NCMGPS"] },
+  { "action": "hide" }
+]
+```
+
+Reads as: keep vanilla medical/map/compass/flashlight/radio/binoculars/watch, keep everything from RHS and Simple GPS, hide the rest.
+
+More recipes:
+
+```json
+{ "action": "hide", "prefabContains": ["Rangefinder_Vector21"] }           // one specific item
+{ "action": "hide", "itemTypes": ["ROCKET_LAUNCHER"], "addons": ["ArmaReforger"] }   // vanilla launchers only
+{ "action": "hide", "addonsExclude": ["RHS_Core", "RHS_Content_01", "RHS_Content_02"] } // anything not RHS, no exceptions
+{ "action": "show", "prefabContains": ["_lc.et"] }, { "action": "hide", "prefabContains": ["Rangefinder"] } // keep low-cost variant, hide the rest
+```
+
+To find an item's addon or path: the prefab path is what the arsenal shows in the Workbench catalog (`Configs/EntityCatalog/...`); the addon ID is in that addon's `addon.gproj`.
+
 ### Modders: the .conf
 
 Categories also exist as `Configs/ArsenalCategories/ARC_ArsenalCategories.conf` (used when no JSON is available). Each entry is a name plus rules; an item must satisfy all of them (a mask of 0 / an empty list means "any"):
@@ -85,7 +122,9 @@ To ship different categories in your own addon, override this config (Resource B
 Scripts/Game/ArsenalCategories/
   ARC_BaseGameMode.c                     server: writes/loads categories.json, pushes it on spawn
   ARC_PlayerController.c                 server->client transport for the JSON (chunked RPC)
-  ARC_CategoryJson.c                     JSON parse/write, enum names <-> flags
+  ARC_CategoryJson.c                     JSON parse/write, enum names <-> flags, visibility rules
+  ARC_VisibilityRule.c                   one show/hide rule (addon, type, mode, prefab path)
+  ARC_ArsenalComponent.c                 modded arsenal: drops hidden items on server and client
   ARC_ArsenalCategory.c                  one category: name, icon, type/mode masks, prefab-name rules
   ARC_ArsenalCategoryConfig.c            config root + built-in defaults
   ARC_ArsenalFilterBar.c                 builds the icon+text button column from vanilla WLib_ButtonTextImage

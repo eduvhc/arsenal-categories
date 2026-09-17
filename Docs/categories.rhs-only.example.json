@@ -182,5 +182,33 @@
       "prefabExcludes": []
     }
   ],
-  "visibility": []
+  "visibility": [
+    {
+      "action": "show",
+      "addons": [
+        "ArmaReforger"
+      ],
+      "prefabContains": [
+        "/Medicine/",
+        "/Equipment/Maps/",
+        "/Equipment/Compass/",
+        "/Equipment/Flashlights/",
+        "/Equipment/Radios/",
+        "/Equipment/Binoculars/",
+        "/Equipment/Watches/"
+      ]
+    },
+    {
+      "action": "show",
+      "addons": [
+        "RHS_Core",
+        "RHS_Content_01",
+        "RHS_Content_02",
+        "NCMGPS"
+      ]
+    },
+    {
+      "action": "hide"
+    }
+  ]
 }
