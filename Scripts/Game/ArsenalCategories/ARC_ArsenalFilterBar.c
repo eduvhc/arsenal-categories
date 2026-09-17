@@ -3,10 +3,10 @@
 //! focus and gamepad handling. Owns no game state: it only remembers the selected index and tells
 //! the controller when the player picks another one.
 //!
-//! Placement: two columns of buttons inside the panel, between the "Arsenal" title and the grid.
-//! Vanilla widgets cannot be re-parented (RemoveChild destroys them) and children hanging outside
-//! the panel get clipped by its ancestors, so a true side column next to the grid would need a
-//! layout override of InventoryContainerGrid.layout; SIDEBAR = true keeps that experiment.
+//! Placement: the addon overrides InventoryContainerGrid.layout to add an empty "ARC_Sidebar"
+//! column left of the item grid; the buttons go there (single column, WCS-style). If another mod
+//! replaced that layout and the column is missing, the buttons fall back to a two-column block
+//! between the "Arsenal" title and the grid, so the feature keeps working either way.
 class ARC_ArsenalFilterBar
 {
 	static const ResourceName BUTTON_LAYOUT = "{4913D5BED796721F}UI/layouts/WidgetLibrary/Buttons/WLib_ButtonTextImage.layout";
@@ -15,10 +15,8 @@ class ARC_ArsenalFilterBar
 	static const string ICON_OTHER = "misc";
 	static const int ALL_INDEX = -1;
 	static const int OTHER_INDEX = -2;
-	static const bool SIDEBAR = false;
+	static const string SIDEBAR_WIDGET = "ARC_Sidebar";
 	static const float SIDEBAR_WIDTH = 200;
-	static const float SIDEBAR_GAP = 8;
-	static const float SIDEBAR_TOP = 0;
 	static const int INLINE_COLUMNS = 2;
 	static const int INLINE_ZORDER = 1000;
 	static const float BUTTON_HEIGHT = 36;
@@ -29,6 +27,8 @@ class ARC_ArsenalFilterBar
 	ref ScriptInvoker m_OnCategoryChanged = new ScriptInvoker();
 
 	protected Widget m_wRoot;
+	protected Widget m_wSidebar;
+	protected bool m_bSidebar;
 	protected ref array<Widget> m_aColumns = {};
 	protected ref array<SCR_ButtonTextComponent> m_aButtons = {};
 	protected ref array<int> m_aButtonCategories = {};
@@ -44,18 +44,19 @@ class ARC_ArsenalFilterBar
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		int columns = INLINE_COLUMNS;
 
-		if (SIDEBAR)
+		m_wSidebar = panelRoot.FindAnyWidget(SIDEBAR_WIDGET);
+		m_bSidebar = m_wSidebar != null;
+
+		if (m_bSidebar)
 		{
-			m_wRoot = workspace.CreateWidget(WidgetType.VerticalLayoutWidgetTypeID, WidgetFlags.VISIBLE, new Color(1, 1, 1, 1), 0, panelRoot);
+			m_wRoot = workspace.CreateWidget(WidgetType.VerticalLayoutWidgetTypeID, WidgetFlags.VISIBLE, new Color(1, 1, 1, 1), 0, m_wSidebar);
 			if (!m_wRoot)
 			{
 				Print("[ARC] CreateWidget(VerticalLayout) returned null", LogLevel.WARNING);
 				return;
 			}
 
-			AlignableSlot.SetHorizontalAlign(m_wRoot, LayoutHorizontalAlign.Left);
-			AlignableSlot.SetVerticalAlign(m_wRoot, LayoutVerticalAlign.Top);
-			AlignableSlot.SetPadding(m_wRoot, -(SIDEBAR_WIDTH + SIDEBAR_GAP), SIDEBAR_TOP, 0, 0);
+			m_wSidebar.SetVisible(true);
 			m_aColumns.Insert(m_wRoot);
 		}
 		else
@@ -112,6 +113,9 @@ class ARC_ArsenalFilterBar
 
 		if (m_wRoot)
 			m_wRoot.RemoveFromHierarchy();
+
+		if (m_wSidebar)
+			m_wSidebar.SetVisible(false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -172,7 +176,7 @@ class ARC_ArsenalFilterBar
 		if (size)
 		{
 			size.SetHeightOverride(BUTTON_HEIGHT);
-			if (SIDEBAR)
+			if (m_bSidebar)
 				size.SetWidthOverride(SIDEBAR_WIDTH);
 		}
 

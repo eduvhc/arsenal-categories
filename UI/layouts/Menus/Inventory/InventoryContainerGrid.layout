@@ -1,0 +1,362 @@
+OverlayWidgetClass {
+ Name "ContainerRoot"
+ Slot GridWidgetSlot "{608CB9B0227C3365}" {
+  Padding 8 0 8 32
+ }
+ "Ignore Cursor" 0
+ {
+  VerticalLayoutWidgetClass "{607A88061B74E5D8}" {
+   Name "Container"
+   Slot OverlayWidgetSlot "{607A88061B74E538}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    SizeLayoutWidgetClass "{607A8805696DC976}" {
+     Name "Header"
+     Slot LayoutSlot "{607A8805696DC952}" {
+      Padding 0 0 0 4
+     }
+     AllowWidthOverride 1
+     AllowHeightOverride 1
+     HeightOverride 62
+     {
+      OverlayWidgetClass "{607A8805C1A0D911}" {
+       Name "HeaderOverlay"
+       Slot AlignableSlot "{607A88056963FEBF}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{607A880547CC8008}" {
+         Name "Background"
+         Slot OverlayWidgetSlot "{607A880547CC8068}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.009 0.013 0.014 1
+        }
+        HorizontalLayoutWidgetClass "{607A8804A66DA73C}" {
+         Name "HorizontalLayout1"
+         Slot OverlayWidgetSlot "{607A8804A66DA76C}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          ItemPreviewWidgetClass "{607A8800B8379680}" {
+           Name "itemStorage"
+           Slot LayoutSlot "{607A8800B83796E4}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+            Padding 10 10 0 10
+           }
+           Filter Bilinear
+           Format "LDR"
+           "Clear Color" 0 0 0 0
+           "Blend mode" Blend
+          }
+          HorizontalLayoutWidgetClass "{607A88034A937C04}" {
+           Name "HorizontalLayout2"
+           Slot LayoutSlot "{607A88034A937C74}" {
+            Padding 10 0 0 0
+            SizeMode Fill
+           }
+           {
+            VerticalLayoutWidgetClass "{607A88032B898B5F}" {
+             Name "TitlePanel"
+             Slot LayoutSlot "{607A88032B898ABC}" {
+              VerticalAlign 1
+              Padding 0 10 0 10
+              SizeMode Fill
+             }
+             {
+              FrameWidgetClass "{609081F0F241B072}" {
+               Name "Frame0"
+               Slot LayoutSlot "{609081F0F241AFA1}" {
+               }
+               components {
+                SCR_HorizontalScrollAnimationComponent "{609081F0DBE59DD4}" {
+                 m_sAnimationContentWidget "StorageName"
+                 m_bAnimateBack 1
+                }
+               }
+               {
+                RichTextWidgetClass "{607A8802D5118731}" {
+                 Name "StorageName"
+                 Slot FrameWidgetSlot "{609081F0F237CD95}" {
+                  Anchor 0 0 0 0
+                  PositionX 0
+                  OffsetLeft 0
+                  PositionY 0
+                  OffsetTop 0
+                  SizeX 100
+                  OffsetRight -100
+                  SizeY 30
+                  OffsetBottom -30
+                  SizeToContent 1
+                 }
+                 Text "Container Name"
+                 "Font Size" 16
+                 "Min Font Size" 16
+                 "Vertical Alignment" Center
+                 FontProperties FontProperties "{607A88029D96E630}" {
+                  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+                 }
+                }
+               }
+              }
+              OverlayWidgetClass "{607A8801935E31CF}" {
+               Name "StorageSpaceIndicator"
+               Slot LayoutSlot "{607A8801935E3125}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+               }
+               {
+                HorizontalLayoutWidgetClass "{6106873EAD73B6E7}" {
+                 Name "HorizontalLayout0"
+                 Slot OverlayWidgetSlot "{6106873EAD73B686}" {
+                  HorizontalAlign 1
+                  VerticalAlign 1
+                  Padding 0 3 0 0
+                 }
+                 {
+                  SizeLayoutWidgetClass "{607AC810F19EFD30}" : "{84D812964985CED4}UI/layouts/Menus/Inventory/InventoryProgressBar.layout" {
+                   Name "ProgressBar"
+                   Slot LayoutSlot "{6106873D59390B25}" {
+                    VerticalAlign 1
+                    SizeMode Auto
+                   }
+                   "Is Visible" 0
+                   AllowWidthOverride 1
+                   WidthOverride 48
+                   AllowHeightOverride 1
+                   HeightOverride 5
+                   AllowMaxDesiredWidth 1
+                   MaxDesiredWidth 4
+                   {
+                    OverlayWidgetClass "{6046898A5CEAFBB2}" {
+                     Prefab "{6046898A5CEAFBB2}"
+                     {
+                      PanelWidgetClass "{6046898A3CDAFC0C}" {
+                       Prefab "{6046898A3CDAFC0C}"
+                       "Z Order" 10
+                      }
+                     }
+                    }
+                   }
+                  }
+                  SizeLayoutWidgetClass "{6108646A169FE49F}" {
+                   Name "SizeLayout0"
+                   Slot LayoutSlot "{6108646A169FE4F4}" {
+                    Padding 4 0 0 0
+                   }
+                   AllowHeightOverride 1
+                   HeightOverride 10
+                   {
+                    RichTextWidgetClass "{6106873EA3607216}" {
+                     Name "VolumeOver"
+                     Slot AlignableSlot "{6108646A168CD2D0}" {
+                     }
+                     "Is Visible" 0
+                     Color 1 0 0 1
+                     Text "#AR-ValueUnit_Percentage_Add"
+                     "Font Size" 12
+                     "Min Font Size" 12
+                     "Vertical Alignment" Center
+                     FontProperties FontProperties "{6106873E7AAD53D3}" {
+                      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+            HorizontalLayoutWidgetClass "{607AE4629B639675}" {
+             Name "Weight"
+             Slot LayoutSlot "{607AE4629B6395AE}" {
+              VerticalAlign 2
+              Padding 0 0 10 10
+             }
+             "Is Visible" 0
+             Color 0.73 0.73 0.73 1
+             {
+              RichTextWidgetClass "{607AE462674420CC}" {
+               Name "WeightText"
+               Slot LayoutSlot "{607AE4626744203A}" {
+               }
+               Clipping False
+               "Inherit Color" 1
+               Text "#AR-ValueUnit_Short_Kilograms"
+               "Font Size" 12
+               "Min Font Size" 12
+               "Vertical Alignment" Center
+               FontProperties FontProperties "{607CD7FF8CB777A2}" {
+                Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+               }
+              }
+              ImageWidgetClass "{607AE4626022036C}" {
+               Name "WeightIcon"
+               Slot LayoutSlot "{607AE4626022034F}" {
+                Padding 4 0 0 0
+               }
+               "Inherit Color" 1
+               Texture "{733F740EB9D6CF54}UI/Textures/InventoryIcons/InventorySlot-Weight.edds"
+               Size 12 12
+              }
+             }
+            }
+           }
+          }
+          ButtonWidgetClass "{6108BCAFF49ED6AA}" : "{8DBE248F685D0D22}UI/layouts/Menus/Inventory/InventoryNavigationButtonBack.layout" {
+           Name "CloseStorageBtn"
+           Slot LayoutSlot "{60F4B65F5D72D51C}" {
+            HorizontalAlign 2
+           }
+           "Is Visible" 0
+           components {
+            SCR_InventoryNavigationButtonBack "{5636CE200B05615C}" {
+             m_bShowBorderOnHover 1
+            }
+           }
+           {
+            SizeLayoutWidgetClass "{570AE838F16F36D1}" {
+             Prefab "{570AE838F16F36D1}"
+             {
+              OverlayWidgetClass "{570AE838F16F36D6}" {
+               Prefab "{570AE838F16F36D6}"
+               {
+                ImageWidgetClass "{570AE838F16F36D7}" {
+                 Prefab "{570AE838F16F36D7}"
+                 "Is Enabled" 0
+                 "Is Visible" 0
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{607E7D63E99FD17D}" {
+     Name "titleLayout"
+     Slot LayoutSlot "{607E7D63E99FD0A3}" {
+     }
+    }
+    HorizontalLayoutWidgetClass "{6AD7C1F04E2B8A11}" {
+     Name "ARC_Body"
+     Slot LayoutSlot "{6AD7C1F04E2B8A12}" {
+     }
+     {
+      VerticalLayoutWidgetClass "{6AD7C1F04E2B8A13}" {
+       Name "ARC_Sidebar"
+       Slot LayoutSlot "{6AD7C1F04E2B8A14}" {
+        VerticalAlign 0
+        Padding 0 0 8 0
+       }
+       "Is Visible" 0
+      }
+      GridLayoutWidgetClass "{607A8805BE33FC47}" {
+       Name "GridLayout0"
+       Slot LayoutSlot "{607A8805BE33FBA4}" {
+        Padding -2 -2 -2 -2
+       }
+       RowFill {
+       }
+       ColumnFill {
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{60ECD1063BF5376D}" : "{71EFAB5E571BF23A}UI/layouts/WidgetLibrary/SpinBox/WLib_SpinBoxPaging.layout" {
+     Name "SpinBoxContainer"
+     Slot LayoutSlot "{5660D75EB75624A9}" {
+      HorizontalAlign 3
+      Padding 0 4 0 0
+      SizeMode Fill
+     }
+     "Is Visible" 0
+     components {
+      SCR_SpinBoxPagingComponent "{54A478843A233C04}" {
+       m_sLeftAction "Inventory_PrevPage"
+       m_sRightAction "Inventory_NextPage"
+      }
+     }
+     {
+      SizeLayoutWidgetClass "{553D290FEBA7C78B}" {
+       Prefab "{553D290FEBA7C78B}"
+       AllowHeightOverride 1
+       HeightOverride 35
+       {
+        OverlayWidgetClass "{54A47884868C8F19}" {
+         Prefab "{54A47884868C8F19}"
+         {
+          ImageWidgetClass "{54A49893FCCABD6D}" {
+           Prefab "{54A49893FCCABD6D}"
+           "Is Enabled" 0
+           "Is Visible" 0
+          }
+          HorizontalLayoutWidgetClass "{54A47884868C9D26}" {
+           Prefab "{54A47884868C9D26}"
+           Slot OverlayWidgetSlot "{553D290D8EF43D86}" {
+            HorizontalAlign 1
+           }
+           {
+            ButtonWidgetClass "{553D290CAC9609E3}" {
+             Prefab "{553D290CAC9609E3}"
+             Slot LayoutSlot "{553D290CAC9609FE}" {
+              HorizontalAlign 1
+             }
+            }
+            ButtonWidgetClass "{553D290CAC5478F2}" {
+             Prefab "{553D290CAC5478F2}"
+             Slot LayoutSlot "{553D290CAC9609FE}" {
+              HorizontalAlign 1
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{607CD7E3A58772C9}" {
+   Name "Button"
+   Slot OverlayWidgetSlot "{607CD7E3A5877229}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   "Is Enabled" 0
+   "Is Visible" 0
+   Color 1 1 1 0
+   components {
+    SCR_InventoryStorageButton "{607CD7E1E44310B8}" {
+    }
+   }
+  }
+  OverlayWidgetClass "{607C8DA3DE4A40A9}" : "{B3BD66EBAC3021EE}UI/layouts/Menus/Inventory/InventorySelectionOverlay.layout" {
+   Name "DropContainer"
+   Slot OverlayWidgetSlot "{607AE461F56E9C79}" {
+   }
+   "Is Visible" 0
+  }
+  OverlayWidgetClass "{607C8DA363711AD3}" : "{4A43E950B1B8EC02}UI/layouts/Menus/Inventory/InventoryWarningOverlay.layout" {
+   Name "WarningOverlay"
+   Slot OverlayWidgetSlot "{607AC815A4C8546E}" {
+   }
+   "Is Visible" 0
+  }
+ }
+}
