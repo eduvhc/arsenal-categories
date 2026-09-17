@@ -62,7 +62,7 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 			return;
 		}
 
-		m_ARC_Filter.Sync(m_widget.FindAnyWidget("titleLayout"), m_Storage);
+		m_ARC_Filter.Sync(m_widget, m_Storage);
 	}
 
 	//------------------------------------------------------------------------------------------------

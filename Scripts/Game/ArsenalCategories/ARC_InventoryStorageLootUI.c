@@ -1,6 +1,6 @@
 //! The "Vicinity" panel. Opening an arsenal from the world traverses this panel into the arsenal
 //! storage, so this is where players normally see the flat item grid. The filter bar is rebuilt
-//! after every FillItemsFromStorage() so it sits right under the "Arsenal" traverse title.
+//! after every FillItemsFromStorage().
 modded class SCR_InventoryStorageLootUI
 {
 	protected ref ARC_ArsenalFilterController m_ARC_Filter;
@@ -46,7 +46,7 @@ modded class SCR_InventoryStorageLootUI
 		super.FillItemsFromStorage(storage);
 
 		if (m_ARC_Filter && m_widget)
-			m_ARC_Filter.Sync(m_widget.FindAnyWidget("titleLayout"), GetCurrentNavigationStorage());
+			m_ARC_Filter.Sync(m_widget, GetCurrentNavigationStorage());
 	}
 
 	//------------------------------------------------------------------------------------------------
