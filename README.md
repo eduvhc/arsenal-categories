@@ -2,7 +2,7 @@
 
 A small, open-source filter bar for the Arma Reforger arsenal panel.
 
-Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category column beside that grid — *All, Submachine Guns, Assault Rifles, Sniper Rifles, Machine Guns, Pistols, Launchers, Ammunition, Attachments, Throwables, Explosives, Clothing, Vests and Backpacks, Medical, Equipment* — each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
+Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category list above that grid — *All, Submachine Guns, Assault Rifles, Sniper Rifles, Machine Guns, Pistols, Launchers, Ammunition, Attachments, Throwables, Explosives, Clothing, Vests and Backpacks, Medical, Equipment* — each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
 
 ## Requirements
 
@@ -12,7 +12,7 @@ Load it on the server like any other addon; clients receive it automatically. It
 
 ## What it does
 
-- Shows a category column to the left of the arsenal panel (the "Open Arsenal" view); the grid stays where it is and is filtered by the selected button. (`ARC_ArsenalFilterBar.SIDEBAR = false` stacks the buttons above the grid instead.) Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
+- Shows a two-column category list inside the arsenal panel (the "Open Arsenal" view), between the arsenal title and the grid; the grid is filtered by the selected button. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
 - Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
 - Buttons are the vanilla `WLib_ButtonTextImage` widget (icon + caption), so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
@@ -58,7 +58,7 @@ Everything new is prefixed `ARC_`, including the members added to the modded cla
 
 1. Script Editor → **Validate Scripts (F7)**.
 2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla), create a sub-scene, and add three prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/MP/Managers/Factions/FactionManager_USxUSSR.et` and `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. Without the game mode every arsenal is empty (`needs a entity catalog manager!`); without exactly one faction manager the game mode crashes on init (`NULL pointer … m_FactionManager`) or complains `Multiple faction managers present!`.
-3. **Play**, walk to the box, *Open Arsenal*. The category column appears to the left of the Vicinity panel. Click through the categories; counts add up to All. Clicking the active category keeps it active.
+3. **Play**, walk to the box, *Open Arsenal*. The category list appears under the "Arsenal" title, above the grid. Click through the categories; counts add up to All. Clicking the active category keeps it active.
 4. Check the Log Console for `[ARC]` warnings — none should appear.
 5. For RHS or other content mods, open the project with those addons (*Open with Addons*) and repeat with their arsenal boxes.
 

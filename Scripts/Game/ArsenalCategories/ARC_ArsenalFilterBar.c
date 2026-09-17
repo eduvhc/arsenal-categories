@@ -3,10 +3,10 @@
 //! focus and gamepad handling. Owns no game state: it only remembers the selected index and tells
 //! the controller when the player picks another one.
 //!
-//! Placement: by default a single column hanging to the LEFT of the panel (the panel root is an
-//! overlay, so a child with negative left padding renders beside it). Vanilla widgets cannot be
-//! re-parented (RemoveChild destroys them), so the grid itself is never touched. Set SIDEBAR to
-//! false to stack the buttons above the grid inside the panel instead.
+//! Placement: two columns of buttons inside the panel, between the "Arsenal" title and the grid.
+//! Vanilla widgets cannot be re-parented (RemoveChild destroys them) and children hanging outside
+//! the panel get clipped by its ancestors, so a true side column next to the grid would need a
+//! layout override of InventoryContainerGrid.layout; SIDEBAR = true keeps that experiment.
 class ARC_ArsenalFilterBar
 {
 	static const ResourceName BUTTON_LAYOUT = "{4913D5BED796721F}UI/layouts/WidgetLibrary/Buttons/WLib_ButtonTextImage.layout";
@@ -15,14 +15,14 @@ class ARC_ArsenalFilterBar
 	static const string ICON_OTHER = "misc";
 	static const int ALL_INDEX = -1;
 	static const int OTHER_INDEX = -2;
-	static const bool SIDEBAR = true;
+	static const bool SIDEBAR = false;
 	static const float SIDEBAR_WIDTH = 200;
 	static const float SIDEBAR_GAP = 8;
 	static const float SIDEBAR_TOP = 0;
 	static const int INLINE_COLUMNS = 2;
 	static const int INLINE_ZORDER = 1000;
-	static const float BUTTON_HEIGHT = 40;
-	static const float ICON_SIZE = 24;
+	static const float BUTTON_HEIGHT = 36;
+	static const float ICON_SIZE = 20;
 	static const float BUTTON_SPACING = 2;
 
 	//! Invoked with the new category index after the player clicks a button.
