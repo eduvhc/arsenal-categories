@@ -2,7 +2,7 @@
 
 A small, open-source filter bar for the Arma Reforger arsenal panel.
 
-Vanilla lists every item an arsenal offers in one flat grid. This addon adds a row of toggle buttons above that grid — *All, Weapons, Ammunition, Attachments, Throwables and Explosives, Clothing, Vests and Backpacks, Medical, Equipment* — so you only scroll through the category you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
+Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category list above that grid — *All, Submachine Guns, Assault Rifles, Sniper Rifles, Machine Guns, Pistols, Launchers, Ammunition, Attachments, Throwables, Explosives, Clothing, Vests and Backpacks, Medical, Equipment* — each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
 
 ## Requirements
 
@@ -12,23 +12,26 @@ Load it on the server like any other addon; clients receive it automatically. It
 
 ## What it does
 
-- Inserts a filter bar into the arsenal storage panel (the "Open Arsenal" view). Only categories that actually contain something in that arsenal get a button; an *Other* button appears when items match no category.
+- Inserts a two-column category list into the arsenal storage panel (the "Open Arsenal" view), right under the arsenal title. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
 - Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
-- Buttons are the vanilla `WLib_ButtonFilter` widget, so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
+- Buttons are the vanilla `WLib_ButtonText` widget, so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
 
 ## Customising the categories
 
-Categories are data: `Configs/ArsenalCategories/ARC_ArsenalCategories.conf`. Each entry has a name, an icon and two masks:
+Categories are data: `Configs/ArsenalCategories/ARC_ArsenalCategories.conf`. Each entry is a name plus rules; an item must satisfy all of them (a mask of 0 / an empty list means "any"):
 
 | Field | Meaning |
 |---|---|
-| `m_sName` | Shown in the storage title |
-| `m_sIcon` | `.edds` texture, or an `.imageset` together with `m_sImageName` |
-| `m_eItemTypes` | `SCR_EArsenalItemType` flags the category includes; `0` = any type |
-| `m_eItemModes` | `SCR_EArsenalItemMode` flags the category includes; `0` = any mode |
+| `m_sName` | Button caption |
+| `m_eItemTypes` | `SCR_EArsenalItemType` flags the category includes |
+| `m_eItemModes` | `SCR_EArsenalItemMode` flags the category includes |
+| `m_aPrefabContains` | Prefab path must contain one of these substrings (case-insensitive) |
+| `m_aPrefabExcludes` | Prefab path must contain none of these |
 
-An item lands in the **first** category whose masks it satisfies, so order matters. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why *Weapons* restricts modes to `WEAPON | WEAPON_VARIANTS` and *Ammunition* restricts modes only.
+An item lands in the **first** category whose rules it satisfies, so order matters: narrow rules go first. That is how *Submachine Guns* works — the engine has no SMG type (mods tag them RIFLE), so it matches type RIFLE **and** a prefab name from a list (`smg`, `_mp5`, `mpx`, …) and sits above *Assault Rifles*. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why weapon categories restrict modes to `WEAPON | WEAPON_VARIANTS` and *Ammunition* restricts the mode only.
+
+The same rules let you map any mod's weapons: a category with `m_aPrefabContains {"rhs_"}` groups everything from RHS; `m_aPrefabExcludes` keeps a mod's launchers out of the vanilla one.
 
 Open the config in Workbench to edit with proper enum pickers, or edit the numbers by hand (flags are stored as integer sums). If the config fails to load, the same defaults built into `ARC_ArsenalCategoryConfig.CreateDefault()` are used and `[ARC] Category config unavailable` is logged.
 

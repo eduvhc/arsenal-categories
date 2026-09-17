@@ -11,6 +11,7 @@ class ARC_ArsenalFilterController
 	protected ref ARC_ArsenalFilterBar m_FilterBar;
 	protected int m_iSelectedCategory = ARC_ArsenalFilterBar.ALL_INDEX;
 	protected BaseInventoryStorageComponent m_Storage;
+	protected int m_iLastItemCount = -1;
 
 	//------------------------------------------------------------------------------------------------
 	void ARC_ArsenalFilterController()
@@ -93,17 +94,17 @@ class ARC_ArsenalFilterController
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! (Re)build the filter bar under host for the given arsenal storage, or remove it when storage
-	//! is not an arsenal. Call after the panel has rebuilt its grid so the bar ends up below any
-	//! traverse title the panel created in the same host.
+	//! Make sure the list under host matches the arsenal storage: create it on first sight of an
+	//! arsenal, reuse it (just moved back below any traverse title) on later refreshes of the same
+	//! arsenal, rebuild it when the arsenal contents changed, remove it when storage is not an arsenal.
 	void Sync(Widget host, BaseInventoryStorageComponent storage)
 	{
-		Destroy();
-
 		SCR_ArsenalComponent arsenal = FindArsenal(storage);
 		if (!arsenal || !host)
 		{
+			Destroy();
 			m_Storage = null;
+			m_iLastItemCount = -1;
 			m_iSelectedCategory = ARC_ArsenalFilterBar.ALL_INDEX;
 			return;
 		}
@@ -111,44 +112,76 @@ class ARC_ArsenalFilterController
 		// Switching to a different arsenal starts from "All" again.
 		if (storage != m_Storage)
 		{
+			Destroy();
 			m_Storage = storage;
+			m_iLastItemCount = -1;
 			m_iSelectedCategory = ARC_ArsenalFilterBar.ALL_INDEX;
 		}
 
 		array<SCR_ArsenalItem> arsenalItems = {};
 		if (!arsenal.GetFilteredArsenalItems(arsenalItems))
 		{
-			Print("[ARC] Arsenal has no items yet; filter bar not shown", LogLevel.WARNING);
+			Destroy();
+			Print("[ARC] Arsenal has no items yet; filter list not shown", LogLevel.WARNING);
 			return;
 		}
 
-		array<int> available = {};
-		bool hasOther = false;
+		if (m_FilterBar && m_FilterBar.IsValid() && arsenalItems.Count() == m_iLastItemCount)
+		{
+			m_FilterBar.MoveToEnd();
+			return;
+		}
+
+		Destroy();
+		m_iLastItemCount = arsenalItems.Count();
+
+		array<ref ARC_ArsenalCategory> categories = m_Config.GetCategories();
+		array<int> counts = {};
+		for (int i = 0, count = categories.Count(); i < count; i++)
+		{
+			counts.Insert(0);
+		}
+
+		int otherCount;
 		foreach (SCR_ArsenalItem item : arsenalItems)
 		{
 			int category = CategoryOf(item);
 			if (category == ARC_ArsenalFilterBar.OTHER_INDEX)
-				hasOther = true;
-			else if (!available.Contains(category))
-				available.Insert(category);
+				otherCount++;
+			else
+				counts[category] = counts[category] + 1;
 		}
 
-		int buttonCount = available.Count();
-		if (hasOther)
-			buttonCount++;
+		array<string> labels = {};
+		array<int> indices = {};
+		labels.Insert(string.Format("All (%1)", arsenalItems.Count()));
+		indices.Insert(ARC_ArsenalFilterBar.ALL_INDEX);
 
-		PrintFormat("[ARC] %1 item(s), %2 category button(s)", arsenalItems.Count(), buttonCount);
+		foreach (int i, ARC_ArsenalCategory category : categories)
+		{
+			if (!category || counts[i] == 0)
+				continue;
 
-		// One category (or none) gives the player nothing to choose; keep the panel untouched.
-		if (buttonCount < 2)
+			labels.Insert(string.Format("%1 (%2)", category.GetName(), counts[i]));
+			indices.Insert(i);
+		}
+
+		if (otherCount > 0)
+		{
+			labels.Insert(string.Format("Other (%1)", otherCount));
+			indices.Insert(ARC_ArsenalFilterBar.OTHER_INDEX);
+		}
+
+		PrintFormat("[ARC] %1 item(s), %2 category button(s)", arsenalItems.Count(), labels.Count());
+
+		// "All" plus a single category gives the player nothing to choose; keep the panel untouched.
+		if (labels.Count() < 3)
 			return;
 
-		available.Sort();
-
-		m_FilterBar = new ARC_ArsenalFilterBar(host, m_Config.GetCategories(), available, hasOther);
+		m_FilterBar = new ARC_ArsenalFilterBar(host, labels, indices);
 		if (!m_FilterBar.IsValid())
 		{
-			Print("[ARC] Filter bar widgets could not be created", LogLevel.WARNING);
+			Print("[ARC] Filter list widgets could not be created", LogLevel.WARNING);
 			m_FilterBar = null;
 			return;
 		}
