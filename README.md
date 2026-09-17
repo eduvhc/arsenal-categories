@@ -40,8 +40,9 @@ $profile:ArsenalCategories/categories.json
       "name": "Submachine Guns",
       "icon": "{71648F15B3984B87}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_AssaultRifles.edds",
       "itemTypes": ["RIFLE"],
-      "itemModes": ["WEAPON", "WEAPON_VARIANTS"],
-      "prefabContains": ["smg", "_mp5", "mpx"],
+      "itemModes": [],
+      "itemModesExclude": ["AMMUNITION", "ATTACHMENT"],
+      "prefabContains": ["/smg", "_smg", "_mp5", "_mpx"],
       "prefabExcludes": []
     }
   ]
@@ -54,6 +55,7 @@ $profile:ArsenalCategories/categories.json
 | `icon` | Icon resource (`{GUID}path.edds`); reuse the vanilla arsenal icons from the example, or `""` for none |
 | `itemTypes` | `SCR_EArsenalItemType` names; `[]` = any type |
 | `itemModes` | `SCR_EArsenalItemMode` names; `[]` = any mode |
+| `itemTypesExclude`, `itemModesExclude` | Types / modes that never belong to the category. Weapon categories use `itemModesExclude: ["AMMUNITION", "ATTACHMENT"]` rather than requiring `WEAPON`, because some mods leave weapons on the default mode |
 | `prefabContains` | Prefab path must contain one of these (case-insensitive); `[]` = any |
 | `prefabExcludes` | Prefab path must contain none of these |
 
@@ -109,10 +111,11 @@ Categories also exist as `Configs/ArsenalCategories/ARC_ArsenalCategories.conf` 
 | `m_sIcon` | Button icon (`.edds`); the defaults reuse the vanilla arsenal icons |
 | `m_eItemTypes` | `SCR_EArsenalItemType` flags the category includes |
 | `m_eItemModes` | `SCR_EArsenalItemMode` flags the category includes |
+| `m_eItemTypesExclude`, `m_eItemModesExclude` | Flags that never belong to the category |
 | `m_aPrefabContains` | Prefab path must contain one of these substrings (case-insensitive) |
 | `m_aPrefabExcludes` | Prefab path must contain none of these |
 
-An item lands in the **first** category whose rules it satisfies, so order matters: narrow rules go first. That is how *Submachine Guns* works — the engine has no SMG type (mods tag them RIFLE), so it matches type RIFLE **and** a prefab name from a list (`smg`, `_mp5`, `mpx`, …) and sits above *Assault Rifles*. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why weapon categories restrict modes to `WEAPON | WEAPON_VARIANTS` and *Ammunition* restricts the mode only.
+An item lands in the **first** category whose rules it satisfies, so order matters: narrow rules go first. That is how *Submachine Guns* works — the engine has no SMG type (mods tag them RIFLE), so it matches type RIFLE **and** a prefab name from a list (`smg`, `_mp5`, `mpx`, …) and sits above *Assault Rifles*. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why weapon categories *exclude* the `AMMUNITION` and `ATTACHMENT` modes (rather than require `WEAPON` — RHS leaves some rifles on the default mode) and *Ammunition* requires the mode only. Patterns are anchored where a bare word would hit something else: `_p90` (the 1P90 optic contains `p90`), `_ump` (`pump`).
 
 The same rules let you map any mod's weapons: a category with `m_aPrefabContains {"rhs_"}` groups everything from RHS; `m_aPrefabExcludes` keeps a mod's launchers out of the vanilla one.
 

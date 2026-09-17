@@ -1,13 +1,14 @@
 //! One entry in the arsenal category list: a name plus the rules that put an item into it.
 //! An item matches when ALL of the following hold (a mask of 0 / an empty list means "any"):
-//!   - its arsenal type is in m_eItemTypes
-//!   - its arsenal mode is in m_eItemModes
+//!   - its arsenal type is in m_eItemTypes and not in m_eItemTypesExclude
+//!   - its arsenal mode is in m_eItemModes and not in m_eItemModesExclude
 //!   - its prefab path contains one of m_aPrefabContains (case-insensitive)
 //!   - its prefab path contains none of m_aPrefabExcludes
 //! Categories are tested in config order and the first match wins, so put narrow rules (e.g.
 //! "Submachine Guns" by prefab name) before broad ones ("Assault Rifles" by type RIFLE).
 //! Magazines carry the type of their weapon but mode AMMUNITION, which is why weapon categories
-//! restrict modes to WEAPON | WEAPON_VARIANTS while "Ammunition" restricts the mode only.
+//! exclude the AMMUNITION and ATTACHMENT modes (some mods leave weapons on the default mode, so
+//! requiring WEAPON would drop them into "Other") while "Ammunition" requires the mode only.
 [BaseContainerProps(), BaseContainerCustomStringTitleField("m_sName")]
 class ARC_ArsenalCategory
 {
@@ -22,6 +23,12 @@ class ARC_ArsenalCategory
 
 	[Attribute("0", UIWidgets.Flags, "Arsenal item modes included. 0 = any mode", enums: ParamEnumArray.FromEnum(SCR_EArsenalItemMode))]
 	protected SCR_EArsenalItemMode m_eItemModes;
+
+	[Attribute("0", UIWidgets.Flags, "Arsenal item types that never belong here", enums: ParamEnumArray.FromEnum(SCR_EArsenalItemType))]
+	protected SCR_EArsenalItemType m_eItemTypesExclude;
+
+	[Attribute("0", UIWidgets.Flags, "Arsenal item modes that never belong here, e.g. AMMUNITION for a weapon category", enums: ParamEnumArray.FromEnum(SCR_EArsenalItemMode))]
+	protected SCR_EArsenalItemMode m_eItemModesExclude;
 
 	[Attribute("", UIWidgets.EditBox, "Prefab path must contain one of these (case-insensitive). Empty = any prefab")]
 	protected ref array<string> m_aPrefabContains;
@@ -54,6 +61,18 @@ class ARC_ArsenalCategory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	SCR_EArsenalItemType GetItemTypesExclude()
+	{
+		return m_eItemTypesExclude;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	SCR_EArsenalItemMode GetItemModesExclude()
+	{
+		return m_eItemModesExclude;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	array<string> GetPrefabContains()
 	{
 		return m_aPrefabContains;
@@ -73,6 +92,12 @@ class ARC_ArsenalCategory
 			return false;
 
 		if (m_eItemModes != 0 && (item.GetItemMode() & m_eItemModes) == 0)
+			return false;
+
+		if ((item.GetItemType() & m_eItemTypesExclude) != 0)
+			return false;
+
+		if ((item.GetItemMode() & m_eItemModesExclude) != 0)
 			return false;
 
 		bool needsPath = (m_aPrefabContains && !m_aPrefabContains.IsEmpty()) || (m_aPrefabExcludes && !m_aPrefabExcludes.IsEmpty());
@@ -105,13 +130,15 @@ class ARC_ArsenalCategory
 
 	//------------------------------------------------------------------------------------------------
 	//! Script-side constructor used for the built-in defaults when no config is available.
-	static ARC_ArsenalCategory Create(string name, ResourceName icon, SCR_EArsenalItemType types, SCR_EArsenalItemMode modes, array<string> prefabContains = null, array<string> prefabExcludes = null)
+	static ARC_ArsenalCategory Create(string name, ResourceName icon, SCR_EArsenalItemType types, SCR_EArsenalItemMode modes, array<string> prefabContains = null, array<string> prefabExcludes = null, SCR_EArsenalItemType typesExclude = 0, SCR_EArsenalItemMode modesExclude = 0)
 	{
 		ARC_ArsenalCategory category = new ARC_ArsenalCategory();
 		category.m_sName = name;
 		category.m_sIcon = icon;
 		category.m_eItemTypes = types;
 		category.m_eItemModes = modes;
+		category.m_eItemTypesExclude = typesExclude;
+		category.m_eItemModesExclude = modesExclude;
 		category.m_aPrefabContains = {};
 		category.m_aPrefabExcludes = {};
 

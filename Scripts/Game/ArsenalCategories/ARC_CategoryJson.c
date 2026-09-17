@@ -112,6 +112,14 @@ class ARC_CategoryJson
 			FlagsToNames(SCR_EArsenalItemMode, category.GetItemModes(), modeNames);
 			context.WriteValue("itemModes", modeNames);
 
+			array<string> typeExcludeNames = {};
+			FlagsToNames(SCR_EArsenalItemType, category.GetItemTypesExclude(), typeExcludeNames);
+			context.WriteValue("itemTypesExclude", typeExcludeNames);
+
+			array<string> modeExcludeNames = {};
+			FlagsToNames(SCR_EArsenalItemMode, category.GetItemModesExclude(), modeExcludeNames);
+			context.WriteValue("itemModesExclude", modeExcludeNames);
+
 			array<string> contains = {};
 			if (category.GetPrefabContains())
 				contains.Copy(category.GetPrefabContains());
@@ -184,6 +192,8 @@ class ARC_CategoryJson
 			string iconText;
 			array<string> typeNames = {};
 			array<string> modeNames = {};
+			array<string> typeExcludeNames = {};
+			array<string> modeExcludeNames = {};
 			array<string> contains = {};
 			array<string> excludes = {};
 
@@ -191,6 +201,8 @@ class ARC_CategoryJson
 			context.ReadValue("icon", iconText);
 			context.ReadValue("itemTypes", typeNames);
 			context.ReadValue("itemModes", modeNames);
+			context.ReadValue("itemTypesExclude", typeExcludeNames);
+			context.ReadValue("itemModesExclude", modeExcludeNames);
 			context.ReadValue("prefabContains", contains);
 			context.ReadValue("prefabExcludes", excludes);
 			context.EndObject();
@@ -203,7 +215,9 @@ class ARC_CategoryJson
 
 			SCR_EArsenalItemType types = NamesToFlags(SCR_EArsenalItemType, typeNames, name);
 			SCR_EArsenalItemMode modes = NamesToFlags(SCR_EArsenalItemMode, modeNames, name);
-			categories.Insert(ARC_ArsenalCategory.Create(name, ToResourceName(iconText), types, modes, contains, excludes));
+			SCR_EArsenalItemType typesExclude = NamesToFlags(SCR_EArsenalItemType, typeExcludeNames, name);
+			SCR_EArsenalItemMode modesExclude = NamesToFlags(SCR_EArsenalItemMode, modeExcludeNames, name);
+			categories.Insert(ARC_ArsenalCategory.Create(name, ToResourceName(iconText), types, modes, contains, excludes, typesExclude, modesExclude));
 		}
 
 		context.EndArray();

@@ -6,25 +6,31 @@
       "itemTypes": [
         "RIFLE"
       ],
-      "itemModes": [
-        "WEAPON",
-        "WEAPON_VARIANTS"
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
       ],
       "prefabContains": [
-        "smg",
+        "/smg",
+        "_smg",
         "_mp5",
-        "mpx",
-        "ump",
+        "_mpx",
+        "_ump",
         "vityaz",
         "pp19",
         "pp2000",
         "ppsh",
-        "uzi",
-        "vector",
-        "p90",
-        "mp7",
+        "_uzi",
+        "kriss",
+        "_p90",
+        "_mp7",
         "kedr",
-        "bizon"
+        "bizon",
+        "_mp40",
+        "sten_",
+        "thompson"
       ],
       "prefabExcludes": []
     },
@@ -34,9 +40,11 @@
       "itemTypes": [
         "RIFLE"
       ],
-      "itemModes": [
-        "WEAPON",
-        "WEAPON_VARIANTS"
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
       ],
       "prefabContains": [],
       "prefabExcludes": []
@@ -47,9 +55,11 @@
       "itemTypes": [
         "SNIPER_RIFLE"
       ],
-      "itemModes": [
-        "WEAPON",
-        "WEAPON_VARIANTS"
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
       ],
       "prefabContains": [],
       "prefabExcludes": []
@@ -60,9 +70,11 @@
       "itemTypes": [
         "MACHINE_GUN"
       ],
-      "itemModes": [
-        "WEAPON",
-        "WEAPON_VARIANTS"
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
       ],
       "prefabContains": [],
       "prefabExcludes": []
@@ -73,9 +85,11 @@
       "itemTypes": [
         "PISTOL"
       ],
-      "itemModes": [
-        "WEAPON",
-        "WEAPON_VARIANTS"
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
       ],
       "prefabContains": [],
       "prefabExcludes": []
@@ -87,9 +101,11 @@
         "ROCKET_LAUNCHER",
         "MORTARS"
       ],
-      "itemModes": [
-        "WEAPON",
-        "WEAPON_VARIANTS"
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
       ],
       "prefabContains": [],
       "prefabExcludes": []
@@ -101,6 +117,8 @@
       "itemModes": [
         "AMMUNITION"
       ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
       "prefabContains": [],
       "prefabExcludes": []
     },
@@ -111,6 +129,8 @@
       "itemModes": [
         "ATTACHMENT"
       ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
       "prefabContains": [],
       "prefabExcludes": []
     },
@@ -122,6 +142,8 @@
         "NON_LETHAL_THROWABLE"
       ],
       "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
       "prefabContains": [],
       "prefabExcludes": []
     },
@@ -132,6 +154,8 @@
         "EXPLOSIVES"
       ],
       "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
       "prefabContains": [],
       "prefabExcludes": []
     },
@@ -146,6 +170,8 @@
         "HANDWEAR"
       ],
       "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
       "prefabContains": [],
       "prefabExcludes": []
     },
@@ -158,6 +184,8 @@
         "RADIO_BACKPACK"
       ],
       "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
       "prefabContains": [],
       "prefabExcludes": []
     },
@@ -168,6 +196,8 @@
         "HEAL"
       ],
       "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
       "prefabContains": [],
       "prefabExcludes": []
     },
@@ -178,6 +208,8 @@
         "EQUIPMENT"
       ],
       "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
       "prefabContains": [],
       "prefabExcludes": []
     }

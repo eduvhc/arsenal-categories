@@ -156,7 +156,9 @@ class ARC_ArsenalCategoryConfig
 		ARC_ArsenalCategoryConfig config = new ARC_ArsenalCategoryConfig();
 		config.m_aCategories = {};
 
-		SCR_EArsenalItemMode weaponModes = SCR_EArsenalItemMode.WEAPON | SCR_EArsenalItemMode.WEAPON_VARIANTS;
+		// Weapons: any mode except magazines/attachments. Requiring WEAPON would lose entries that mods
+		// leave on the default mode (RHS M4A1 Block 1, for example).
+		SCR_EArsenalItemMode notWeaponModes = SCR_EArsenalItemMode.AMMUNITION | SCR_EArsenalItemMode.ATTACHMENT;
 		SCR_EArsenalItemType throwableTypes = SCR_EArsenalItemType.LETHAL_THROWABLE | SCR_EArsenalItemType.NON_LETHAL_THROWABLE;
 		SCR_EArsenalItemType clothingTypes = SCR_EArsenalItemType.HEADWEAR | SCR_EArsenalItemType.TORSO | SCR_EArsenalItemType.LEGS
 			| SCR_EArsenalItemType.FOOTWEAR | SCR_EArsenalItemType.HANDWEAR;
@@ -164,14 +166,16 @@ class ARC_ArsenalCategoryConfig
 		SCR_EArsenalItemType launcherTypes = SCR_EArsenalItemType.ROCKET_LAUNCHER | SCR_EArsenalItemType.MORTARS;
 
 		// The engine has no SMG type (mods tag them RIFLE), so they are picked out by prefab name first.
-		array<string> smgNames = {"smg", "_mp5", "mpx", "ump", "vityaz", "pp19", "pp2000", "ppsh", "uzi", "vector", "p90", "mp7", "kedr", "bizon"};
+		// Patterns are anchored with separators where a bare word would hit something else ("p90" is
+		// also the 1P90 optic on AK-74Ms; "ump" is in "pump").
+		array<string> smgNames = {"/smg", "_smg", "_mp5", "_mpx", "_ump", "vityaz", "pp19", "pp2000", "ppsh", "_uzi", "kriss", "_p90", "_mp7", "kedr", "bizon", "_mp40", "sten_", "thompson"};
 
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Submachine Guns", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, weaponModes, smgNames));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Assault Rifles", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, weaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Sniper Rifles", ICON_SNIPERS, SCR_EArsenalItemType.SNIPER_RIFLE, weaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Machine Guns", ICON_MACHINE_GUNS, SCR_EArsenalItemType.MACHINE_GUN, weaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Pistols", ICON_PISTOLS, SCR_EArsenalItemType.PISTOL, weaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Launchers", ICON_LAUNCHERS, launcherTypes, weaponModes));
+		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Submachine Guns", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, smgNames, null, 0, notWeaponModes));
+		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Assault Rifles", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, null, null, 0, notWeaponModes));
+		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Sniper Rifles", ICON_SNIPERS, SCR_EArsenalItemType.SNIPER_RIFLE, 0, null, null, 0, notWeaponModes));
+		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Machine Guns", ICON_MACHINE_GUNS, SCR_EArsenalItemType.MACHINE_GUN, 0, null, null, 0, notWeaponModes));
+		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Pistols", ICON_PISTOLS, SCR_EArsenalItemType.PISTOL, 0, null, null, 0, notWeaponModes));
+		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Launchers", ICON_LAUNCHERS, launcherTypes, 0, null, null, 0, notWeaponModes));
 		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Ammunition", ICON_MAGAZINES, 0, SCR_EArsenalItemMode.AMMUNITION));
 		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Attachments", ICON_OPTICS, 0, SCR_EArsenalItemMode.ATTACHMENT));
 		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Throwables", ICON_GRENADES, throwableTypes, 0));
