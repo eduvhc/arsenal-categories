@@ -93,22 +93,24 @@ class ARC_CategoryJson
 	{
 		PrettyJsonSaveContext context = new PrettyJsonSaveContext();
 
-		if (!layout)
-			layout = new ARC_Settings();
+		// A parameter cannot own a new object; keep the fallback alive in a local.
+		ref ARC_Settings settings = layout;
+		if (!settings)
+			settings = new ARC_Settings();
 
 		context.StartObject("layout");
-		context.WriteValue("widePanel", layout.IsWidePanel());
-		context.WriteValue("columns", layout.GetColumns());
-		context.WriteValue("rows", layout.GetRows());
-		context.WriteValue("categoriesPerColumn", layout.GetCategoriesPerColumn());
-		context.WriteValue("categoryWidth", layout.GetCategoryWidth());
+		context.WriteValue("widePanel", settings.IsWidePanel());
+		context.WriteValue("columns", settings.GetColumns());
+		context.WriteValue("rows", settings.GetRows());
+		context.WriteValue("categoriesPerColumn", settings.GetCategoriesPerColumn());
+		context.WriteValue("categoryWidth", settings.GetCategoryWidth());
 		context.EndObject();
 
 		context.StartObject("buy");
-		context.WriteValue("magazinesToStorage", layout.IsMagazinesToStorage());
-		context.WriteValue("weaponSwap", layout.IsWeaponSwap());
-		context.WriteValue("fallbackStorages", layout.IsFallbackStorages());
-		context.WriteValue("arsenalAttachments", layout.IsArsenalAttachments());
+		context.WriteValue("magazinesToStorage", settings.IsMagazinesToStorage());
+		context.WriteValue("weaponSwap", settings.IsWeaponSwap());
+		context.WriteValue("fallbackStorages", settings.IsFallbackStorages());
+		context.WriteValue("arsenalAttachments", settings.IsArsenalAttachments());
 		context.EndObject();
 
 		int count = categories.Count();
