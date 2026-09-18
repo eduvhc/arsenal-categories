@@ -9,7 +9,8 @@
   "buy": {
     "magazinesToStorage": true,
     "weaponSwap": true,
-    "fallbackStorages": true
+    "fallbackStorages": true,
+    "arsenalAttachments": true
   },
   "categories": [
     {

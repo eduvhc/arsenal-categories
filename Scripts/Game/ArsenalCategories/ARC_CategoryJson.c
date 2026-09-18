@@ -108,6 +108,7 @@ class ARC_CategoryJson
 		context.WriteValue("magazinesToStorage", layout.IsMagazinesToStorage());
 		context.WriteValue("weaponSwap", layout.IsWeaponSwap());
 		context.WriteValue("fallbackStorages", layout.IsFallbackStorages());
+		context.WriteValue("arsenalAttachments", layout.IsArsenalAttachments());
 		context.EndObject();
 
 		int count = categories.Count();
@@ -264,6 +265,7 @@ class ARC_CategoryJson
 		bool magazinesToStorage = defaults.IsMagazinesToStorage();
 		bool weaponSwap = defaults.IsWeaponSwap();
 		bool fallbackStorages = defaults.IsFallbackStorages();
+		bool arsenalAttachments = defaults.IsArsenalAttachments();
 
 		if (context.StartObject("layout"))
 		{
@@ -280,10 +282,11 @@ class ARC_CategoryJson
 			context.ReadValue("magazinesToStorage", magazinesToStorage);
 			context.ReadValue("weaponSwap", weaponSwap);
 			context.ReadValue("fallbackStorages", fallbackStorages);
+			context.ReadValue("arsenalAttachments", arsenalAttachments);
 			context.EndObject();
 		}
 
-		return ARC_Settings.Create(widePanel, columns, rows, perColumn, width, magazinesToStorage, weaponSwap, fallbackStorages);
+		return ARC_Settings.Create(widePanel, columns, rows, perColumn, width, magazinesToStorage, weaponSwap, fallbackStorages, arsenalAttachments);
 	}
 
 	//------------------------------------------------------------------------------------------------

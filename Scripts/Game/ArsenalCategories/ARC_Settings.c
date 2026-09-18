@@ -33,9 +33,12 @@ class ARC_Settings
 	protected bool m_bWeaponSwap = true;
 	//! When the best-fit storage rejects an item, try equipment and deposit storages before giving up.
 	protected bool m_bFallbackStorages = true;
+	//! While inspecting a weapon next to an arsenal, each attachment slot also lists the arsenal's
+	//! compatible attachments and magazines as buyable tiles; buying puts them straight on the weapon.
+	protected bool m_bArsenalAttachments = true;
 
 	//------------------------------------------------------------------------------------------------
-	static ARC_Settings Create(bool widePanel, int columns, int rows, int categoriesPerColumn, int categoryWidth, bool magazinesToStorage = true, bool weaponSwap = true, bool fallbackStorages = true)
+	static ARC_Settings Create(bool widePanel, int columns, int rows, int categoriesPerColumn, int categoryWidth, bool magazinesToStorage = true, bool weaponSwap = true, bool fallbackStorages = true, bool arsenalAttachments = true)
 	{
 		ARC_Settings settings = new ARC_Settings();
 		settings.m_bWidePanel = widePanel;
@@ -46,6 +49,7 @@ class ARC_Settings
 		settings.m_bMagazinesToStorage = magazinesToStorage;
 		settings.m_bWeaponSwap = weaponSwap;
 		settings.m_bFallbackStorages = fallbackStorages;
+		settings.m_bArsenalAttachments = arsenalAttachments;
 		return settings;
 	}
 
@@ -95,5 +99,11 @@ class ARC_Settings
 	bool IsFallbackStorages()
 	{
 		return m_bFallbackStorages;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsArsenalAttachments()
+	{
+		return m_bArsenalAttachments;
 	}
 }

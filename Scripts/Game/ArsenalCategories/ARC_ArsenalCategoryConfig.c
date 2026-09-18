@@ -50,6 +50,9 @@ class ARC_ArsenalCategoryConfig
 	[Attribute("1", UIWidgets.CheckBox, "When the best-fit storage rejects an item, try equipment and deposit storages", category: "Buy")]
 	protected bool m_bFallbackStorages;
 
+	[Attribute("1", UIWidgets.CheckBox, "Weapon inspection lists the arsenal's compatible attachments and magazines per slot, buyable straight onto the weapon", category: "Buy")]
+	protected bool m_bArsenalAttachments;
+
 	//! Layout in force; built from the JSON "layout" object or from the attributes above.
 	protected ref ARC_Settings m_Layout;
 
@@ -85,7 +88,7 @@ class ARC_ArsenalCategoryConfig
 	ARC_Settings GetLayout()
 	{
 		if (!m_Layout)
-			m_Layout = ARC_Settings.Create(m_bWidePanel, m_iGridColumns, m_iGridRows, m_iCategoriesPerColumn, m_iCategoryWidth, m_bMagazinesToStorage, m_bWeaponSwap, m_bFallbackStorages);
+			m_Layout = ARC_Settings.Create(m_bWidePanel, m_iGridColumns, m_iGridRows, m_iCategoriesPerColumn, m_iCategoryWidth, m_bMagazinesToStorage, m_bWeaponSwap, m_bFallbackStorages, m_bArsenalAttachments);
 
 		return m_Layout;
 	}

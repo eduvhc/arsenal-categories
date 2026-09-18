@@ -62,7 +62,7 @@ modded class SCR_InventoryMenuUI
 			return super.MoveBetweenFromVicinity_VirtualArsenal();
 
 		ARC_Settings settings = ARC_ArsenalCategoryConfig.GetActiveLayout();
-		if (!settings.IsMagazinesToStorage() && !settings.IsWeaponSwap() && !settings.IsFallbackStorages())
+		if (!settings.IsMagazinesToStorage() && !settings.IsWeaponSwap() && !settings.IsFallbackStorages() && !settings.IsArsenalAttachments())
 			return super.MoveBetweenFromVicinity_VirtualArsenal();
 
 		// Rank lock: vanilla also stops here, silently.
@@ -82,6 +82,20 @@ modded class SCR_InventoryMenuUI
 
 		ResourceName resourceName = arsenalSlot.GetItemResource();
 		RplId resourceId = Replication.FindItemId(resourceComponent);
+
+		// 0. Tile of the inspect row: straight onto the inspected weapon when its slot takes it.
+		if (settings.IsArsenalAttachments() && ARC_IsInspectTile(arsenalSlot))
+		{
+			BaseInventoryStorageComponent weaponStorage;
+			if (GetGearInspectionUI())
+				weaponStorage = GetGearInspectionUI().GetStorage();
+
+			if (weaponStorage && m_InventoryManager.CanInsertItemInStorage(item, weaponStorage))
+			{
+				resourceInventory.RpcAsk_ArsenalRequestItem(resourceId, Replication.FindItemId(weaponStorage), resourceName, EResourceType.SUPPLIES);
+				return true;
+			}
+		}
 
 		// 1. Magazines: a pouch or backpack first, so the loaded magazine stays where it is.
 		if (settings.IsMagazinesToStorage() && item.FindComponent(BaseMagazineComponent))
@@ -125,7 +139,15 @@ modded class SCR_InventoryMenuUI
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! eturn true when a swap request was sent
+	//! \return true when the slot is an arsenal tile of the attachment row shown while inspecting
+	protected bool ARC_IsInspectTile(notnull SCR_InventorySlotUI slot)
+	{
+		SCR_InventoryAttachmentStorageUI row = SCR_InventoryAttachmentStorageUI.Cast(slot.GetStorageUI());
+		return row && row.ARC_IsArsenalSlot(slot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true when a swap request was sent
 	protected bool ARC_TrySwapWeapon(notnull IEntity item, notnull SCR_ResourcePlayerControllerInventoryComponent resourceInventory, RplId resourceId, ResourceName resourceName)
 	{
 		WeaponComponent weapon = WeaponComponent.Cast(item.FindComponent(WeaponComponent));
