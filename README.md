@@ -14,8 +14,8 @@ Load it on the server like any other addon; clients receive it automatically. Wi
 
 ## What it does
 
-- Shows a category column to the left of the item grid inside the arsenal panel (the "Open Arsenal" view), WCS-style; the grid is filtered by the selected button. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
-- The column comes from an override of `UI/layouts/Menus/Inventory/InventoryContainerGrid.layout` that wraps the grid in a horizontal layout with a hidden `ARC_Sidebar` column (shown only while an arsenal is listed, so backpacks and crates look unchanged). If another mod replaces that layout, the buttons fall back to a two-column block above the grid — the feature never disappears.
+- Shows a category column to the left of the Vicinity panel while an arsenal is open (the "Open Arsenal" view), WCS-style; the grid is filtered by the selected button. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
+- The column is inserted into the inventory menu's own content row (the same row that holds the Vicinity column, the character and the storage columns), so no vanilla layout is overridden and every other panel is untouched. If another mod replaces the main inventory layout, the buttons fall back to a two-column block above the grid — the feature never disappears.
 - Optional server-enforced hiding of items (e.g. RHS only, keep vanilla medical) via the same JSON.
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
 - Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
@@ -140,17 +140,15 @@ Scripts/Game/ArsenalCategories/
   ARC_InventoryOpenedStorageArsenalUI.c  modded standalone arsenal column
 Configs/ArsenalCategories/
   ARC_ArsenalCategories.conf             the shipped categories
-UI/layouts/Menus/Inventory/
-  InventoryContainerGrid.layout          override of the vanilla storage panel: adds the ARC_Sidebar column
 ```
 
-Everything new is prefixed `ARC_`, including the members added to the modded classes and the widgets in the layout. The one shared resource is the `InventoryContainerGrid.layout` override; a second mod overriding the same layout wins or loses by load order, in which case the inline fallback kicks in.
+Everything new is prefixed `ARC_`, including the members added to the modded classes. No vanilla layout or script file is replaced.
 
 ## Testing in Workbench
 
 1. Script Editor → **Validate Scripts (F7)**.
 2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla), create a sub-scene, and add three prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/MP/Managers/Factions/FactionManager_USxUSSR.et` and `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. Without the game mode every arsenal is empty (`needs a entity catalog manager!`); without exactly one faction manager the game mode crashes on init (`NULL pointer … m_FactionManager`) or complains `Multiple faction managers present!`.
-3. **Play**, walk to the box, *Open Arsenal*. The category column appears to the left of the grid, under the "Arsenal" title. Click through the categories; counts add up to All. Clicking the active category keeps it active.
+3. **Play**, walk to the box, *Open Arsenal*. The category column appears to the left of the Vicinity panel. Click through the categories; counts add up to All. Clicking the active category keeps it active.
 4. Check the Log Console for `[ARC]`: expect `Server categories loaded`, `Received server categories`, `Using categories pushed by the server`, and no warnings.
 5. For RHS or other content mods, open the project with those addons (*Open with Addons*) and repeat with their arsenal boxes.
 

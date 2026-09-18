@@ -46,7 +46,7 @@ modded class SCR_InventoryStorageLootUI
 		super.FillItemsFromStorage(storage);
 
 		if (m_ARC_Filter && m_widget)
-			m_ARC_Filter.Sync(m_widget, GetCurrentNavigationStorage());
+			m_ARC_Filter.Sync(m_widget, ARC_GetMenuRoot(), GetCurrentNavigationStorage());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -55,7 +55,17 @@ modded class SCR_InventoryStorageLootUI
 		super.Home();
 
 		if (m_ARC_Filter)
-			m_ARC_Filter.Sync(null, null);
+			m_ARC_Filter.Sync(null, null, null);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected Widget ARC_GetMenuRoot()
+	{
+		SCR_InventoryMenuUI menu = GetInventoryMenuHandler();
+		if (!menu)
+			return null;
+
+		return menu.GetRootWidget();
 	}
 
 	//------------------------------------------------------------------------------------------------

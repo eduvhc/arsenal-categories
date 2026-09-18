@@ -58,11 +58,12 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 		// Only the root arsenal listing gets a bar; a nested storage shows its own contents.
 		if (m_aTraverseStorage.Count() > 1)
 		{
-			m_ARC_Filter.Sync(null, null);
+			m_ARC_Filter.Sync(null, null, null);
 			return;
 		}
 
-		m_ARC_Filter.Sync(m_widget, m_Storage);
+		// Opened-storage columns already sit in the content row; keep their list inline in the panel.
+		m_ARC_Filter.Sync(m_widget, null, m_Storage);
 	}
 
 	//------------------------------------------------------------------------------------------------

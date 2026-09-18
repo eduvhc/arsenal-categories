@@ -3,10 +3,13 @@
 //! focus and gamepad handling. Owns no game state: it only remembers the selected index and tells
 //! the controller when the player picks another one.
 //!
-//! Placement: the addon overrides InventoryContainerGrid.layout to add an empty "ARC_Sidebar"
-//! column left of the item grid; the buttons go there (single column, WCS-style). If another mod
-//! replaced that layout and the column is missing, the buttons fall back to a two-column block
-//! between the "Arsenal" title and the grid, so the feature keeps working either way.
+//! Placement: a single column inserted into the inventory menu's own content row
+//! ("InventoryContent" in InventoryMain.layout, the horizontal row holding the vicinity column,
+//! the character and the storage columns), z-ordered before the vicinity column so it sits to its
+//! left, WCS-style. No vanilla layout is overridden and nothing hangs outside a panel, so it can
+//! neither be clipped nor disturb the storage panels. If that row cannot be found (another mod
+//! replaced the main layout) the buttons fall back to a two-column block between the "Arsenal"
+//! title and the item grid.
 class ARC_ArsenalFilterBar
 {
 	static const ResourceName BUTTON_LAYOUT = "{4913D5BED796721F}UI/layouts/WidgetLibrary/Buttons/WLib_ButtonTextImage.layout";
@@ -15,8 +18,10 @@ class ARC_ArsenalFilterBar
 	static const string ICON_OTHER = "misc";
 	static const int ALL_INDEX = -1;
 	static const int OTHER_INDEX = -2;
-	static const string SIDEBAR_WIDGET = "ARC_Sidebar";
+	static const string SIDEBAR_HOST = "InventoryContent";
+	static const int SIDEBAR_ZORDER = -1;
 	static const float SIDEBAR_WIDTH = 200;
+	static const float SIDEBAR_GAP = 8;
 	static const int INLINE_COLUMNS = 2;
 	static const int INLINE_ZORDER = 1000;
 	static const float BUTTON_HEIGHT = 36;
@@ -27,7 +32,6 @@ class ARC_ArsenalFilterBar
 	ref ScriptInvoker m_OnCategoryChanged = new ScriptInvoker();
 
 	protected Widget m_wRoot;
-	protected Widget m_wSidebar;
 	protected bool m_bSidebar;
 	protected ref array<Widget> m_aColumns = {};
 	protected ref array<SCR_ButtonTextComponent> m_aButtons = {};
@@ -36,27 +40,34 @@ class ARC_ArsenalFilterBar
 
 	//------------------------------------------------------------------------------------------------
 	//! \param panelRoot root widget of the storage panel (InventoryContainerGrid "ContainerRoot")
+	//! \param menuRoot root widget of the inventory menu (may be null; enables the side column)
 	//! \param labels button captions in display order (already including counts)
 	//! \param icons icon per label (.edds resource; empty for the built-in All / Other icons)
 	//! \param categoryIndices category index per label (ALL_INDEX / OTHER_INDEX allowed)
-	void ARC_ArsenalFilterBar(notnull Widget panelRoot, notnull array<string> labels, notnull array<ResourceName> icons, notnull array<int> categoryIndices)
+	void ARC_ArsenalFilterBar(notnull Widget panelRoot, Widget menuRoot, notnull array<string> labels, notnull array<ResourceName> icons, notnull array<int> categoryIndices)
 	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		int columns = INLINE_COLUMNS;
 
-		m_wSidebar = panelRoot.FindAnyWidget(SIDEBAR_WIDGET);
-		m_bSidebar = m_wSidebar != null;
+		Widget contentRow;
+		if (menuRoot)
+			contentRow = menuRoot.FindAnyWidget(SIDEBAR_HOST);
+
+		m_bSidebar = contentRow != null;
 
 		if (m_bSidebar)
 		{
-			m_wRoot = workspace.CreateWidget(WidgetType.VerticalLayoutWidgetTypeID, WidgetFlags.VISIBLE, new Color(1, 1, 1, 1), 0, m_wSidebar);
+			m_wRoot = workspace.CreateWidget(WidgetType.VerticalLayoutWidgetTypeID, WidgetFlags.VISIBLE, new Color(1, 1, 1, 1), SIDEBAR_ZORDER, contentRow);
 			if (!m_wRoot)
 			{
 				Print("[ARC] CreateWidget(VerticalLayout) returned null", LogLevel.WARNING);
 				return;
 			}
 
-			m_wSidebar.SetVisible(true);
+			// Lower z-order than the vicinity column ("Left", 0) puts the list before it in the row.
+			m_wRoot.SetZOrder(SIDEBAR_ZORDER);
+			LayoutSlot.SetVerticalAlign(m_wRoot, LayoutVerticalAlign.Top);
+			LayoutSlot.SetPadding(m_wRoot, 0, 0, SIDEBAR_GAP, 0);
 			m_aColumns.Insert(m_wRoot);
 		}
 		else
@@ -113,9 +124,6 @@ class ARC_ArsenalFilterBar
 
 		if (m_wRoot)
 			m_wRoot.RemoveFromHierarchy();
-
-		if (m_wSidebar)
-			m_wSidebar.SetVisible(false);
 	}
 
 	//------------------------------------------------------------------------------------------------

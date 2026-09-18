@@ -94,10 +94,12 @@ class ARC_ArsenalFilterController
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Make sure the list attached to panelRoot matches the arsenal storage: create it on first sight
-	//! of an arsenal, keep it on later refreshes of the same arsenal, rebuild it when the arsenal
-	//! contents changed, remove it when storage is not an arsenal.
-	void Sync(Widget panelRoot, BaseInventoryStorageComponent storage)
+	//! Make sure the list matches the arsenal storage: create it on first sight of an arsenal, keep
+	//! it on later refreshes of the same arsenal, rebuild it when the arsenal contents changed,
+	//! remove it when storage is not an arsenal.
+	//! \param panelRoot root widget of the storage panel (fallback host)
+	//! \param menuRoot root widget of the inventory menu (side column host), may be null
+	void Sync(Widget panelRoot, Widget menuRoot, BaseInventoryStorageComponent storage)
 	{
 		SCR_ArsenalComponent arsenal = FindArsenal(storage);
 		if (!arsenal || !panelRoot)
@@ -179,7 +181,7 @@ class ARC_ArsenalFilterController
 		if (labels.Count() < 3)
 			return;
 
-		m_FilterBar = new ARC_ArsenalFilterBar(panelRoot, labels, icons, indices);
+		m_FilterBar = new ARC_ArsenalFilterBar(panelRoot, menuRoot, labels, icons, indices);
 		if (!m_FilterBar.IsValid())
 		{
 			Print("[ARC] Filter list widgets could not be created", LogLevel.WARNING);
