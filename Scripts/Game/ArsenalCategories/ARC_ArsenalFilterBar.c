@@ -57,7 +57,7 @@ class ARC_ArsenalFilterBar
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		int columns = INLINE_COLUMNS;
 
-		ARC_LayoutSettings layout = ARC_ArsenalCategoryConfig.GetActiveLayout();
+		ARC_Settings layout = ARC_ArsenalCategoryConfig.GetActiveLayout();
 		m_iPerColumn = layout.GetCategoriesPerColumn();
 		m_fButtonWidth = layout.GetCategoryWidth();
 

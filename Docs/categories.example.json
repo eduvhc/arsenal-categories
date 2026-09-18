@@ -6,6 +6,11 @@
     "categoriesPerColumn": 11,
     "categoryWidth": 200
   },
+  "buy": {
+    "magazinesToStorage": true,
+    "weaponSwap": true,
+    "fallbackStorages": true
+  },
   "categories": [
     {
       "name": "Submachine Guns",

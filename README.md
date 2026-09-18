@@ -35,6 +35,7 @@ Load it on the server like any other addon; clients receive it automatically. Wi
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
 - Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
 - Buttons are the vanilla `WLib_ButtonTextImage` widget (icon + caption), so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
+- Smarter **Buy** (right-click on an arsenal item): magazines go to a pouch instead of into the weapon, buying a weapon into an occupied holster slot swaps it (old one refunded), rejected items fall back to other storages. Each is a switch in the JSON `buy` object.
 
 ## Customising the categories
 
@@ -76,6 +77,18 @@ The optional `"layout"` object shapes the panel (values are clamped to sane rang
 | `columns`, `rows` | Item grid size of the wide panel (vanilla: 6 × 8) |
 | `categoriesPerColumn` | Category buttons per column before wrapping into the next |
 | `categoryWidth` | Button width in pixels |
+
+The optional `"buy"` object changes what right-click / **Buy** on an arsenal item does (WCS behaviour; all default to `true`):
+
+```json
+"buy": { "magazinesToStorage": true, "weaponSwap": true, "fallbackStorages": true }
+```
+
+| Key | Meaning |
+|---|---|
+| `magazinesToStorage` | Magazines go to a pouch or backpack first. Vanilla lets the game pick the "best" storage, which for a magazine is the weapon itself: the new one loads and the loaded one is ejected, so you never end up with more than one |
+| `weaponSwap` | Buying a weapon whose holster slot (primary/secondary) is occupied refunds the old weapon and takes the new one in one go. The server runs the vanilla refund and request handlers with all their checks; if the refund is rejected nothing is bought |
+| `fallbackStorages` | When the best-fit storage rejects an item (grenades, mines, ...), equipment and deposit storages are tried before giving up |
 
 Category keys:
 
@@ -151,7 +164,7 @@ Categories also exist as `Configs/ArsenalCategories/ARC_ArsenalCategories.conf` 
 | `m_aPrefabContains` | Prefab path must contain one of these substrings (case-insensitive) |
 | `m_aPrefabExcludes` | Prefab path must contain none of these |
 
-The config's *Layout* category holds the same panel settings as the JSON `layout` object (`m_bWidePanel`, `m_iGridColumns`, `m_iGridRows`, `m_iCategoriesPerColumn`, `m_iCategoryWidth`).
+The config's *Layout* and *Buy* categories hold the same settings as the JSON `layout` and `buy` objects (`m_bWidePanel`, `m_iGridColumns`, `m_iGridRows`, `m_iCategoriesPerColumn`, `m_iCategoryWidth`, `m_bMagazinesToStorage`, `m_bWeaponSwap`, `m_bFallbackStorages`).
 
 An item lands in the **first** category whose rules it satisfies, so order matters: narrow rules go first. That is how *Submachine Guns*, *Shotguns* and *Grenade Launchers* work — the engine has no such types (mods tag them RIFLE or ROCKET_LAUNCHER), so each matches the broad type **and** a prefab name from a list (`smg`, `_mp5`, `mpx`, … / `shotgun`, `m1014`, … / `gm94`, `m320`, …) and sits above *Assault Rifles*. The same goes for *Optics* / *Muzzle Devices* / *Lasers & Lights* / *Grips & Bipods* above the catch-all *Attachments*, *Helmets* / *Face & Eyewear* above *Headwear*, and *Navigation* / *Radios* / *Night Vision* / … above *Equipment*. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why weapon categories *exclude* the `AMMUNITION` and `ATTACHMENT` modes (rather than require `WEAPON` — RHS leaves some rifles on the default mode) and *Ammunition* requires the mode only. Patterns are anchored where a bare word would hit something else: `_p90` (the 1P90 optic contains `p90`), `_ump` (`pump`).
 
@@ -176,8 +189,10 @@ Scripts/Game/ArsenalCategories/
   ARC_ArsenalFilterController.c          shared: selection state, bar lifecycle, filtered item list
   ARC_InventoryStorageLootUI.c           modded Vicinity panel (arsenal browsed in place)
   ARC_InventoryOpenedStorageArsenalUI.c  modded standalone arsenal column
-  ARC_InventoryMenuUI.c                  modded inventory menu: swaps the Vicinity panel for the wide layout
-  ARC_LayoutSettings.c                   panel settings (wide panel, grid size, category columns)
+  ARC_InventoryMenuUI.c                  modded inventory menu: wide Vicinity panel, smart Buy
+  ARC_InventorySlotWeaponSlotsUI.c       modded holster slot: exposes its slot type for the weapon swap
+  ARC_ResourcePlayerControllerInventoryComponent.c  server: weapon swap = vanilla refund + vanilla request
+  ARC_Settings.c                         layout and buy settings (JSON layout / buy objects, .conf)
 Configs/ArsenalCategories/
   ARC_ArsenalCategories.conf             the shipped categories
 UI/layouts/Menus/Inventory/

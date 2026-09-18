@@ -41,8 +41,17 @@ class ARC_ArsenalCategoryConfig
 	[Attribute("200", UIWidgets.Slider, "Width of a category button (px)", "120 320 1", category: "Layout")]
 	protected int m_iCategoryWidth;
 
+	[Attribute("1", UIWidgets.CheckBox, "Bought magazines go to a pouch or backpack instead of being loaded into the weapon", category: "Buy")]
+	protected bool m_bMagazinesToStorage;
+
+	[Attribute("1", UIWidgets.CheckBox, "Buying a weapon into an occupied holster slot refunds the old weapon and takes the new one", category: "Buy")]
+	protected bool m_bWeaponSwap;
+
+	[Attribute("1", UIWidgets.CheckBox, "When the best-fit storage rejects an item, try equipment and deposit storages", category: "Buy")]
+	protected bool m_bFallbackStorages;
+
 	//! Layout in force; built from the JSON "layout" object or from the attributes above.
-	protected ref ARC_LayoutSettings m_Layout;
+	protected ref ARC_Settings m_Layout;
 
 	//! Show/hide rules; JSON only. Empty = every item the arsenal offers is shown.
 	protected ref array<ref ARC_VisibilityRule> m_aVisibilityRules = {};
@@ -72,22 +81,22 @@ class ARC_ArsenalCategoryConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Never null: falls back to the defaults of ARC_LayoutSettings.
-	ARC_LayoutSettings GetLayout()
+	//! Never null: falls back to the defaults of ARC_Settings.
+	ARC_Settings GetLayout()
 	{
 		if (!m_Layout)
-			m_Layout = ARC_LayoutSettings.Create(m_bWidePanel, m_iGridColumns, m_iGridRows, m_iCategoriesPerColumn, m_iCategoryWidth);
+			m_Layout = ARC_Settings.Create(m_bWidePanel, m_iGridColumns, m_iGridRows, m_iCategoriesPerColumn, m_iCategoryWidth, m_bMagazinesToStorage, m_bWeaponSwap, m_bFallbackStorages);
 
 		return m_Layout;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Layout of the configuration currently in force (static convenience for the UI).
-	static ARC_LayoutSettings GetActiveLayout()
+	static ARC_Settings GetActiveLayout()
 	{
 		ARC_ArsenalCategoryConfig config = GetActive();
 		if (!config)
-			return new ARC_LayoutSettings();
+			return new ARC_Settings();
 
 		return config.GetLayout();
 	}
@@ -151,7 +160,7 @@ class ARC_ArsenalCategoryConfig
 	{
 		array<ref ARC_ArsenalCategory> jsonCategories = {};
 		array<ref ARC_VisibilityRule> jsonRules = {};
-		ARC_LayoutSettings jsonLayout;
+		ARC_Settings jsonLayout;
 		if (!s_sServerJson.IsEmpty() && ARC_CategoryJson.Parse(s_sServerJson, jsonCategories, jsonRules, jsonLayout))
 		{
 			PrintFormat("[ARC] Using categories pushed by the server (%1 categories, %2 visibility rules)", jsonCategories.Count(), jsonRules.Count());
@@ -177,7 +186,7 @@ class ARC_ArsenalCategoryConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static ARC_ArsenalCategoryConfig FromCategories(notnull array<ref ARC_ArsenalCategory> categories, array<ref ARC_VisibilityRule> rules = null, ARC_LayoutSettings layout = null)
+	static ARC_ArsenalCategoryConfig FromCategories(notnull array<ref ARC_ArsenalCategory> categories, array<ref ARC_VisibilityRule> rules = null, ARC_Settings layout = null)
 	{
 		ARC_ArsenalCategoryConfig config = new ARC_ArsenalCategoryConfig();
 		config.m_aCategories = {};

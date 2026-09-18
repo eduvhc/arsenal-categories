@@ -34,7 +34,7 @@ class ARC_CategoryJson
 	//------------------------------------------------------------------------------------------------
 	//! Parse a JSON document into categories.
 	//! \return false when the document is invalid or contains no usable category
-	static bool Parse(string json, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules, out ARC_LayoutSettings layout)
+	static bool Parse(string json, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules, out ARC_Settings layout)
 	{
 		JsonLoadContext context = new JsonLoadContext();
 		if (!context.LoadFromString(json))
@@ -49,7 +49,7 @@ class ARC_CategoryJson
 	//------------------------------------------------------------------------------------------------
 	//! Load categories from a JSON file in the profile directory.
 	//! \return false when the file does not exist or is unusable
-	static bool LoadFile(string path, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules, out ARC_LayoutSettings layout)
+	static bool LoadFile(string path, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules, out ARC_Settings layout)
 	{
 		if (!FileIO.FileExists(path))
 			return false;
@@ -89,12 +89,12 @@ class ARC_CategoryJson
 
 	//------------------------------------------------------------------------------------------------
 	//! Write categories as a JSON file, e.g. to give admins a template with the defaults.
-	static bool SaveFile(string path, notnull array<ref ARC_ArsenalCategory> categories, array<ref ARC_VisibilityRule> rules = null, ARC_LayoutSettings layout = null)
+	static bool SaveFile(string path, notnull array<ref ARC_ArsenalCategory> categories, array<ref ARC_VisibilityRule> rules = null, ARC_Settings layout = null)
 	{
 		PrettyJsonSaveContext context = new PrettyJsonSaveContext();
 
 		if (!layout)
-			layout = new ARC_LayoutSettings();
+			layout = new ARC_Settings();
 
 		context.StartObject("layout");
 		context.WriteValue("widePanel", layout.IsWidePanel());
@@ -102,6 +102,12 @@ class ARC_CategoryJson
 		context.WriteValue("rows", layout.GetRows());
 		context.WriteValue("categoriesPerColumn", layout.GetCategoriesPerColumn());
 		context.WriteValue("categoryWidth", layout.GetCategoryWidth());
+		context.EndObject();
+
+		context.StartObject("buy");
+		context.WriteValue("magazinesToStorage", layout.IsMagazinesToStorage());
+		context.WriteValue("weaponSwap", layout.IsWeaponSwap());
+		context.WriteValue("fallbackStorages", layout.IsFallbackStorages());
 		context.EndObject();
 
 		int count = categories.Count();
@@ -185,7 +191,7 @@ class ARC_CategoryJson
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Read(notnull JsonLoadContext context, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules, out ARC_LayoutSettings layout)
+	protected static bool Read(notnull JsonLoadContext context, out notnull array<ref ARC_ArsenalCategory> categories, out notnull array<ref ARC_VisibilityRule> rules, out ARC_Settings layout)
 	{
 		layout = ReadLayout(context);
 
@@ -246,27 +252,38 @@ class ARC_CategoryJson
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Optional "layout" object; absent keys keep their defaults, values are clamped.
-	protected static ARC_LayoutSettings ReadLayout(notnull JsonLoadContext context)
+	//! Optional "layout" and "buy" objects; absent keys keep their defaults, values are clamped.
+	protected static ARC_Settings ReadLayout(notnull JsonLoadContext context)
 	{
-		ARC_LayoutSettings defaults = new ARC_LayoutSettings();
+		ARC_Settings defaults = new ARC_Settings();
 		bool widePanel = defaults.IsWidePanel();
 		int columns = defaults.GetColumns();
 		int rows = defaults.GetRows();
 		int perColumn = defaults.GetCategoriesPerColumn();
 		int width = defaults.GetCategoryWidth();
+		bool magazinesToStorage = defaults.IsMagazinesToStorage();
+		bool weaponSwap = defaults.IsWeaponSwap();
+		bool fallbackStorages = defaults.IsFallbackStorages();
 
-		if (!context.StartObject("layout"))
-			return defaults;
+		if (context.StartObject("layout"))
+		{
+			context.ReadValue("widePanel", widePanel);
+			context.ReadValue("columns", columns);
+			context.ReadValue("rows", rows);
+			context.ReadValue("categoriesPerColumn", perColumn);
+			context.ReadValue("categoryWidth", width);
+			context.EndObject();
+		}
 
-		context.ReadValue("widePanel", widePanel);
-		context.ReadValue("columns", columns);
-		context.ReadValue("rows", rows);
-		context.ReadValue("categoriesPerColumn", perColumn);
-		context.ReadValue("categoryWidth", width);
-		context.EndObject();
+		if (context.StartObject("buy"))
+		{
+			context.ReadValue("magazinesToStorage", magazinesToStorage);
+			context.ReadValue("weaponSwap", weaponSwap);
+			context.ReadValue("fallbackStorages", fallbackStorages);
+			context.EndObject();
+		}
 
-		return ARC_LayoutSettings.Create(widePanel, columns, rows, perColumn, width);
+		return ARC_Settings.Create(widePanel, columns, rows, perColumn, width, magazinesToStorage, weaponSwap, fallbackStorages);
 	}
 
 	//------------------------------------------------------------------------------------------------

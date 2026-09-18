@@ -49,7 +49,7 @@ modded class SCR_BaseGameMode
 		// Validate before pushing: a broken file is reported here, on the server, and not sent at all.
 		array<ref ARC_ArsenalCategory> categories = {};
 		array<ref ARC_VisibilityRule> rules = {};
-		ARC_LayoutSettings layout;
+		ARC_Settings layout;
 		if (!ARC_CategoryJson.LoadFile(ARC_CategoryJson.FILE_PATH, categories, rules, layout))
 		{
 			Print("[ARC] " + ARC_CategoryJson.FILE_PATH + " is unusable; clients use their own configuration", LogLevel.WARNING);
