@@ -28,16 +28,23 @@ modded class SCR_InventoryStorageLootUI
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The vanilla call must run even when a category is selected: it is what marks this panel as
+	//! an arsenal (m_bIsArsenal, OnArsenalEnter), which the refund-on-drop flow and the arsenal
+	//! refresh subscription depend on. The filtered list then replaces the full one.
 	override protected void GetAllItems(out notnull array<IEntity> pItemsInStorage, BaseInventoryStorageComponent pStorage = null)
 	{
-		if (m_ARC_Filter && m_ARC_Filter.IsFiltering())
-		{
-			SCR_ArsenalComponent arsenal = ARC_ArsenalFilterController.FindArsenal(pStorage);
-			if (arsenal && m_ARC_Filter.GetItems(arsenal, pItemsInStorage))
-				return;
-		}
-
 		super.GetAllItems(pItemsInStorage, pStorage);
+
+		if (!m_ARC_Filter || !m_ARC_Filter.IsFiltering())
+			return;
+
+		SCR_ArsenalComponent arsenal = ARC_ArsenalFilterController.FindArsenal(pStorage);
+		if (!arsenal)
+			return;
+
+		array<IEntity> filtered = {};
+		if (m_ARC_Filter.GetItems(arsenal, filtered))
+			pItemsInStorage.Copy(filtered);
 	}
 
 	//------------------------------------------------------------------------------------------------

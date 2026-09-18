@@ -37,16 +37,21 @@ modded class SCR_InventoryOpenedStorageArsenalUI
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Vanilla runs first so the panel is still flagged as an arsenal; see ARC_InventoryStorageLootUI.
 	override protected void GetAllItems(out notnull array<IEntity> pItemsInStorage, BaseInventoryStorageComponent pStorage = null)
 	{
-		if (!pStorage && m_ARC_Filter && m_ARC_Filter.IsFiltering())
-		{
-			SCR_ArsenalComponent arsenal = ARC_ArsenalFilterController.FindArsenal(m_Storage);
-			if (arsenal && m_ARC_Filter.GetItems(arsenal, pItemsInStorage))
-				return;
-		}
-
 		super.GetAllItems(pItemsInStorage, pStorage);
+
+		if (pStorage || !m_ARC_Filter || !m_ARC_Filter.IsFiltering())
+			return;
+
+		SCR_ArsenalComponent arsenal = ARC_ArsenalFilterController.FindArsenal(m_Storage);
+		if (!arsenal)
+			return;
+
+		array<IEntity> filtered = {};
+		if (m_ARC_Filter.GetItems(arsenal, filtered))
+			pItemsInStorage.Copy(filtered);
 	}
 
 	//------------------------------------------------------------------------------------------------
