@@ -3,13 +3,15 @@
 //! focus and gamepad handling. Owns no game state: it only remembers the selected index and tells
 //! the controller when the player picks another one.
 //!
-//! Placement: a single column inserted into the inventory menu's own content row
-//! ("InventoryContent" in InventoryMain.layout, the horizontal row holding the vicinity column,
-//! the character and the storage columns), z-ordered before the vicinity column so it sits to its
-//! left, WCS-style. No vanilla layout is overridden and nothing hangs outside a panel, so it can
-//! neither be clipped nor disturb the storage panels. If that row cannot be found (another mod
-//! replaced the main layout) the buttons fall back to a two-column block between the "Arsenal"
-//! title and the item grid.
+//! Placement, first that applies:
+//!   1. the "ARC_Categories" grid of the wide arsenal panel (ARC_InventoryContainerGrid.layout,
+//!      chosen by SCR_InventoryMenuUI.ShowVicinity when the layout says widePanel): buttons fill
+//!      it top-down, wrapping into a new column every categoriesPerColumn buttons, WCS-style;
+//!   2. a single column inserted into the inventory menu's own content row ("InventoryContent" in
+//!      InventoryMain.layout), z-ordered before the vicinity column so it sits to its left;
+//!   3. a two-column block between the "Arsenal" title and the item grid.
+//! No vanilla layout is overridden and nothing hangs outside a panel, so the list can neither be
+//! clipped nor disturb the other storage panels.
 class ARC_ArsenalFilterBar
 {
 	static const ResourceName BUTTON_LAYOUT = "{4913D5BED796721F}UI/layouts/WidgetLibrary/Buttons/WLib_ButtonTextImage.layout";
@@ -18,6 +20,8 @@ class ARC_ArsenalFilterBar
 	static const string ICON_OTHER = "misc";
 	static const int ALL_INDEX = -1;
 	static const int OTHER_INDEX = -2;
+	static const string PANEL_HOST = "ARC_Categories";
+	static const string PANEL_SCROLL = "ARC_CategoriesScroll";
 	static const string SIDEBAR_HOST = "InventoryContent";
 	static const int SIDEBAR_ZORDER = -1;
 	static const float SIDEBAR_WIDTH = 200;
@@ -32,7 +36,11 @@ class ARC_ArsenalFilterBar
 	ref ScriptInvoker m_OnCategoryChanged = new ScriptInvoker();
 
 	protected Widget m_wRoot;
+	protected Widget m_wPanelScroll;
 	protected bool m_bSidebar;
+	protected bool m_bPanelGrid;
+	protected int m_iPerColumn;
+	protected float m_fButtonWidth = SIDEBAR_WIDTH;
 	protected ref array<Widget> m_aColumns = {};
 	protected ref array<SCR_ButtonTextComponent> m_aButtons = {};
 	protected ref array<int> m_aButtonCategories = {};
@@ -49,13 +57,28 @@ class ARC_ArsenalFilterBar
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		int columns = INLINE_COLUMNS;
 
+		ARC_LayoutSettings layout = ARC_ArsenalCategoryConfig.GetActiveLayout();
+		m_iPerColumn = layout.GetCategoriesPerColumn();
+		m_fButtonWidth = layout.GetCategoryWidth();
+
+		Widget panelGrid = panelRoot.FindAnyWidget(PANEL_HOST);
+		m_bPanelGrid = panelGrid != null;
+
 		Widget contentRow;
-		if (menuRoot)
+		if (!m_bPanelGrid && menuRoot)
 			contentRow = menuRoot.FindAnyWidget(SIDEBAR_HOST);
 
 		m_bSidebar = contentRow != null;
 
-		if (m_bSidebar)
+		if (m_bPanelGrid)
+		{
+			// The grid is part of the panel layout: buttons go straight into it, placed by row/column.
+			m_wRoot = panelGrid;
+			m_wPanelScroll = panelRoot.FindAnyWidget(PANEL_SCROLL);
+			if (m_wPanelScroll)
+				m_wPanelScroll.SetVisible(true);
+		}
+		else if (m_bSidebar)
 		{
 			m_wRoot = workspace.CreateWidget(WidgetType.VerticalLayoutWidgetTypeID, WidgetFlags.VISIBLE, new Color(1, 1, 1, 1), SIDEBAR_ZORDER, contentRow);
 			if (!m_wRoot)
@@ -122,8 +145,22 @@ class ARC_ArsenalFilterBar
 				button.m_OnClicked.Remove(OnButtonClicked);
 		}
 
-		if (m_wRoot)
+		if (m_bPanelGrid)
+		{
+			// The grid belongs to the panel layout: empty it and hide its scroll column, keep it.
+			foreach (SCR_ButtonTextComponent button : m_aButtons)
+			{
+				if (button && button.GetRootWidget())
+					button.GetRootWidget().RemoveFromHierarchy();
+			}
+
+			if (m_wPanelScroll)
+				m_wPanelScroll.SetVisible(false);
+		}
+		else if (m_wRoot)
+		{
 			m_wRoot.RemoveFromHierarchy();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,11 +195,20 @@ class ARC_ArsenalFilterBar
 	//------------------------------------------------------------------------------------------------
 	protected void AddButton(int categoryIndex, string label, ResourceName icon)
 	{
-		if (m_aColumns.IsEmpty())
-			return;
+		Widget host;
+		if (m_bPanelGrid)
+		{
+			host = m_wRoot;
+		}
+		else
+		{
+			if (m_aColumns.IsEmpty())
+				return;
 
-		Widget column = m_aColumns[m_aButtons.Count() % m_aColumns.Count()];
-		Widget buttonWidget = GetGame().GetWorkspace().CreateWidgets(BUTTON_LAYOUT, column);
+			host = m_aColumns[m_aButtons.Count() % m_aColumns.Count()];
+		}
+
+		Widget buttonWidget = GetGame().GetWorkspace().CreateWidgets(BUTTON_LAYOUT, host);
 		if (!buttonWidget)
 		{
 			Print("[ARC] Could not create WLib_ButtonTextImage widget", LogLevel.WARNING);
@@ -177,15 +223,25 @@ class ARC_ArsenalFilterBar
 			return;
 		}
 
-		LayoutSlot.SetHorizontalAlign(buttonWidget, LayoutHorizontalAlign.Stretch);
-		LayoutSlot.SetPadding(buttonWidget, 0, 0, 0, BUTTON_SPACING);
+		if (m_bPanelGrid)
+		{
+			int index = m_aButtons.Count();
+			GridSlot.SetRow(buttonWidget, index % m_iPerColumn);
+			GridSlot.SetColumn(buttonWidget, index / m_iPerColumn);
+			GridSlot.SetPadding(buttonWidget, 0, 0, BUTTON_SPACING, BUTTON_SPACING);
+		}
+		else
+		{
+			LayoutSlot.SetHorizontalAlign(buttonWidget, LayoutHorizontalAlign.Stretch);
+			LayoutSlot.SetPadding(buttonWidget, 0, 0, 0, BUTTON_SPACING);
+		}
 
 		SizeLayoutWidget size = SizeLayoutWidget.Cast(buttonWidget.FindAnyWidget("SizeLayout"));
 		if (size)
 		{
 			size.SetHeightOverride(BUTTON_HEIGHT);
-			if (m_bSidebar)
-				size.SetWidthOverride(SIDEBAR_WIDTH);
+			if (m_bSidebar || m_bPanelGrid)
+				size.SetWidthOverride(m_fButtonWidth);
 		}
 
 		ImageWidget image = ImageWidget.Cast(buttonWidget.FindAnyWidget("Image0"));

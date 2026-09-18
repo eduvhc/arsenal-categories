@@ -26,6 +26,24 @@ class ARC_ArsenalCategoryConfig
 	[Attribute("", UIWidgets.Object, "Categories in display order; first match wins")]
 	protected ref array<ref ARC_ArsenalCategory> m_aCategories;
 
+	[Attribute("1", UIWidgets.CheckBox, "Wide arsenal panel: own layout for the Vicinity panel with the categories inside it", category: "Layout")]
+	protected bool m_bWidePanel;
+
+	[Attribute("8", UIWidgets.Slider, "Item grid columns of the wide panel", "4 12 1", category: "Layout")]
+	protected int m_iGridColumns;
+
+	[Attribute("8", UIWidgets.Slider, "Item grid rows of the wide panel", "4 12 1", category: "Layout")]
+	protected int m_iGridRows;
+
+	[Attribute("11", UIWidgets.Slider, "Category buttons per column", "4 30 1", category: "Layout")]
+	protected int m_iCategoriesPerColumn;
+
+	[Attribute("200", UIWidgets.Slider, "Width of a category button (px)", "120 320 1", category: "Layout")]
+	protected int m_iCategoryWidth;
+
+	//! Layout in force; built from the JSON "layout" object or from the attributes above.
+	protected ref ARC_LayoutSettings m_Layout;
+
 	//! Show/hide rules; JSON only. Empty = every item the arsenal offers is shown.
 	protected ref array<ref ARC_VisibilityRule> m_aVisibilityRules = {};
 
@@ -51,6 +69,27 @@ class ARC_ArsenalCategoryConfig
 			s_Active = Load();
 
 		return s_Active;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Never null: falls back to the defaults of ARC_LayoutSettings.
+	ARC_LayoutSettings GetLayout()
+	{
+		if (!m_Layout)
+			m_Layout = ARC_LayoutSettings.Create(m_bWidePanel, m_iGridColumns, m_iGridRows, m_iCategoriesPerColumn, m_iCategoryWidth);
+
+		return m_Layout;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Layout of the configuration currently in force (static convenience for the UI).
+	static ARC_LayoutSettings GetActiveLayout()
+	{
+		ARC_ArsenalCategoryConfig config = GetActive();
+		if (!config)
+			return new ARC_LayoutSettings();
+
+		return config.GetLayout();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -112,16 +151,17 @@ class ARC_ArsenalCategoryConfig
 	{
 		array<ref ARC_ArsenalCategory> jsonCategories = {};
 		array<ref ARC_VisibilityRule> jsonRules = {};
-		if (!s_sServerJson.IsEmpty() && ARC_CategoryJson.Parse(s_sServerJson, jsonCategories, jsonRules))
+		ARC_LayoutSettings jsonLayout;
+		if (!s_sServerJson.IsEmpty() && ARC_CategoryJson.Parse(s_sServerJson, jsonCategories, jsonRules, jsonLayout))
 		{
 			PrintFormat("[ARC] Using categories pushed by the server (%1 categories, %2 visibility rules)", jsonCategories.Count(), jsonRules.Count());
-			return FromCategories(jsonCategories, jsonRules);
+			return FromCategories(jsonCategories, jsonRules, jsonLayout);
 		}
 
-		if (ARC_CategoryJson.LoadFile(ARC_CategoryJson.FILE_PATH, jsonCategories, jsonRules))
+		if (ARC_CategoryJson.LoadFile(ARC_CategoryJson.FILE_PATH, jsonCategories, jsonRules, jsonLayout))
 		{
 			PrintFormat("[ARC] Using categories from %1 (%2 categories, %3 visibility rules)", ARC_CategoryJson.FILE_PATH, jsonCategories.Count(), jsonRules.Count());
-			return FromCategories(jsonCategories, jsonRules);
+			return FromCategories(jsonCategories, jsonRules, jsonLayout);
 		}
 
 		Resource resource = Resource.Load(CONFIG_PATH);
@@ -137,10 +177,11 @@ class ARC_ArsenalCategoryConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static ARC_ArsenalCategoryConfig FromCategories(notnull array<ref ARC_ArsenalCategory> categories, array<ref ARC_VisibilityRule> rules = null)
+	static ARC_ArsenalCategoryConfig FromCategories(notnull array<ref ARC_ArsenalCategory> categories, array<ref ARC_VisibilityRule> rules = null, ARC_LayoutSettings layout = null)
 	{
 		ARC_ArsenalCategoryConfig config = new ARC_ArsenalCategoryConfig();
 		config.m_aCategories = {};
+		config.m_Layout = layout;
 		foreach (ARC_ArsenalCategory category : categories)
 			config.m_aCategories.Insert(category);
 		if (rules)

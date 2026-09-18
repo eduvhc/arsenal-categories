@@ -29,8 +29,8 @@ Load it on the server like any other addon; clients receive it automatically. Wi
 
 ## What it does
 
-- Shows a category column to the left of the Vicinity panel while an arsenal is open (the "Open Arsenal" view), WCS-style; the grid is filtered by the selected button. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
-- The column is inserted into the inventory menu's own content row (the same row that holds the Vicinity column, the character and the storage columns), so no vanilla layout is overridden and every other panel is untouched. If another mod replaces the main inventory layout, the buttons fall back to a two-column block above the grid — the feature never disappears.
+- Replaces the Vicinity panel with a **wide arsenal panel** while an arsenal is open (the "Open Arsenal" view), WCS-style: the category list sits inside the panel on the left (wrapping into more columns when long) and the item grid next to it is 8 columns wide instead of 6. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
+- Only that one panel uses the addon's layout (swapped in `SCR_InventoryMenuUI.ShowVicinity`, the same way WCS does it); no vanilla layout is overridden by GUID, so backpacks, vests and crates keep the vanilla panel. With `"widePanel": false` the vanilla panel is used and the category column is inserted into the inventory's content row to its left; if even that row is missing (another mod replaced the main layout) the buttons fall back to a two-column block above the grid — the feature never disappears.
 - Optional server-enforced hiding of items (e.g. RHS only, keep vanilla medical) via the same JSON.
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
 - Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
@@ -63,6 +63,21 @@ $profile:ArsenalCategories/categories.json
   ]
 }
 ```
+
+The optional `"layout"` object shapes the panel (values are clamped to sane ranges; missing keys keep these defaults):
+
+```json
+"layout": { "widePanel": true, "columns": 8, "rows": 8, "categoriesPerColumn": 11, "categoryWidth": 200 }
+```
+
+| Key | Meaning |
+|---|---|
+| `widePanel` | `true` = wide arsenal panel with the categories inside it; `false` = vanilla panel, categories in a column to its left |
+| `columns`, `rows` | Item grid size of the wide panel (vanilla: 6 × 8) |
+| `categoriesPerColumn` | Category buttons per column before wrapping into the next |
+| `categoryWidth` | Button width in pixels |
+
+Category keys:
 
 | Key | Meaning |
 |---|---|
@@ -136,6 +151,8 @@ Categories also exist as `Configs/ArsenalCategories/ARC_ArsenalCategories.conf` 
 | `m_aPrefabContains` | Prefab path must contain one of these substrings (case-insensitive) |
 | `m_aPrefabExcludes` | Prefab path must contain none of these |
 
+The config's *Layout* category holds the same panel settings as the JSON `layout` object (`m_bWidePanel`, `m_iGridColumns`, `m_iGridRows`, `m_iCategoriesPerColumn`, `m_iCategoryWidth`).
+
 An item lands in the **first** category whose rules it satisfies, so order matters: narrow rules go first. That is how *Submachine Guns*, *Shotguns* and *Grenade Launchers* work — the engine has no such types (mods tag them RIFLE or ROCKET_LAUNCHER), so each matches the broad type **and** a prefab name from a list (`smg`, `_mp5`, `mpx`, … / `shotgun`, `m1014`, … / `gm94`, `m320`, …) and sits above *Assault Rifles*. The same goes for *Optics* / *Muzzle Devices* / *Lasers & Lights* / *Grips & Bipods* above the catch-all *Attachments*, *Helmets* / *Face & Eyewear* above *Headwear*, and *Navigation* / *Radios* / *Night Vision* / … above *Equipment*. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why weapon categories *exclude* the `AMMUNITION` and `ATTACHMENT` modes (rather than require `WEAPON` — RHS leaves some rifles on the default mode) and *Ammunition* requires the mode only. Patterns are anchored where a bare word would hit something else: `_p90` (the 1P90 optic contains `p90`), `_ump` (`pump`).
 
 The same rules let you map any mod's weapons: a category with `m_aPrefabContains {"rhs_"}` groups everything from RHS; `m_aPrefabExcludes` keeps a mod's launchers out of the vanilla one.
@@ -159,17 +176,21 @@ Scripts/Game/ArsenalCategories/
   ARC_ArsenalFilterController.c          shared: selection state, bar lifecycle, filtered item list
   ARC_InventoryStorageLootUI.c           modded Vicinity panel (arsenal browsed in place)
   ARC_InventoryOpenedStorageArsenalUI.c  modded standalone arsenal column
+  ARC_InventoryMenuUI.c                  modded inventory menu: swaps the Vicinity panel for the wide layout
+  ARC_LayoutSettings.c                   panel settings (wide panel, grid size, category columns)
 Configs/ArsenalCategories/
   ARC_ArsenalCategories.conf             the shipped categories
+UI/layouts/Menus/Inventory/
+  ARC_InventoryContainerGrid.layout      the wide arsenal panel (vanilla panel + category grid), own GUID
 ```
 
-Everything new is prefixed `ARC_`, including the members added to the modded classes. No vanilla layout or script file is replaced.
+Everything new is prefixed `ARC_`, including the members added to the modded classes and the widgets of the panel layout. No vanilla layout or script file is replaced by GUID.
 
 ## Testing in Workbench
 
 1. Script Editor → **Validate Scripts (F7)**.
 2. Open `worlds/MP/MpTest/MpTest_Basic.ent` (vanilla), create a sub-scene, and add three prefabs: `Prefabs/MP/Modes/Plain/GameMode_Plain.et`, `Prefabs/MP/Managers/Factions/FactionManager_USxUSSR.et` and `Prefabs/Props/Military/Arsenal/ArsenalBoxes/US/ArsenalBox_US.et`. Without the game mode every arsenal is empty (`needs a entity catalog manager!`); without exactly one faction manager the game mode crashes on init (`NULL pointer … m_FactionManager`) or complains `Multiple faction managers present!`.
-3. **Play**, walk to the box, *Open Arsenal*. The category column appears to the left of the Vicinity panel. Click through the categories; counts add up to All. Clicking the active category keeps it active.
+3. **Play**, walk to the box, *Open Arsenal*. The wide panel opens with the category list on its left. Click through the categories; counts add up to All. Clicking the active category keeps it active.
 4. Check the Log Console for `[ARC]`: expect `Server categories loaded`, `Received server categories`, `Using categories pushed by the server`, and no warnings.
 5. For RHS or other content mods, open the project with those addons (*Open with Addons*) and repeat with their arsenal boxes.
 

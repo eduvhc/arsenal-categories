@@ -1,4 +1,11 @@
 {
+  "layout": {
+    "widePanel": true,
+    "columns": 8,
+    "rows": 8,
+    "categoriesPerColumn": 11,
+    "categoryWidth": 200
+  },
   "categories": [
     {
       "name": "Submachine Guns",

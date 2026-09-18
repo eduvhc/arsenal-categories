@@ -2,6 +2,7 @@
 
 ## 1.1.0
 
+- Wide arsenal panel, WCS-style: own layout for the Vicinity panel only (categories inside the panel, 8-column grid), configurable through the JSON `layout` object / the .conf (`widePanel`, `columns`, `rows`, `categoriesPerColumn`, `categoryWidth`).
 - 39 default categories (was 14): weapons split further (Shotguns, Grenade Launchers), ammunition (Vehicle & Aircraft, Rockets & Shells, Launcher Rounds, Magazines), attachments (Optics, Muzzle Devices, Lasers & Lights, Grips & Bipods), clothing (Helmets, Face & Eyewear, Headwear, Jackets & Shirts, Trousers, Boots & Gloves, Vests, Pouches & Plates, Backpacks) and equipment (Medical, Navigation, Binoculars & Rangefinders, Radios, Night Vision, Flares & Lights, Tools & Kits, Deployables, Patches). Verified against every vanilla and RHS catalog entry: nothing lands in Other.
 - Weapon categories exclude the AMMUNITION/ATTACHMENT modes instead of requiring WEAPON (RHS M4A1 Block 1 no longer lands in Other).
 - Side column moved into the inventory content row; the InventoryContainerGrid.layout override is gone (it broke panel titles, drag and drop and the context menu).
