@@ -1,10 +1,25 @@
 # Arsenal Categories
 
+![Arsenal Categories](Docs/Assets/image.png)
+
 A small, open-source category sidebar and item-visibility filter for the Arma Reforger arsenal panel.
 
 Source: https://github.com/eduvhc/arsenal-categories
 
-Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category column next to that grid — *All, Submachine Guns, Assault Rifles, Sniper Rifles, Machine Guns, Pistols, Launchers, Ammunition, Attachments, Throwables, Explosives, Clothing, Vests and Backpacks, Medical, Equipment* — each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
+Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category column next to that grid, each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
+
+The 39 default categories, in display order (empty ones are hidden, so a vanilla-only arsenal shows far fewer):
+
+| Group | Categories |
+|---|---|
+| Weapons | Submachine Guns · Shotguns · Grenade Launchers · Assault Rifles · Sniper Rifles · Machine Guns · Pistols · Launchers |
+| Ammunition | Vehicle & Aircraft · Rockets & Shells · Launcher Rounds · Magazines |
+| Attachments | Optics · Muzzle Devices · Lasers & Lights · Grips & Bipods · Attachments |
+| Throwables | Grenades · Smokes & Signals · Explosives |
+| Clothing | Helmets · Face & Eyewear · Headwear · Jackets & Shirts · Trousers · Boots & Gloves · Vests · Pouches & Plates · Backpacks |
+| Equipment | Medical · Navigation · Binoculars & Rangefinders · Radios · Night Vision · Flares & Lights · Tools & Kits · Deployables · Patches · Equipment |
+
+*Navigation* is map, compass, GPS, watch, DAGR and ballistic tables; *Tools & Kits* is repair/rearming kits, entrenching tools, mine flags and jerrycans; *Deployables* is mortar and tripod parts, sandbags and barbed tape. The set was checked against every vanilla and RHS catalog entry (about 3 000 prefabs): nothing lands in *Other*.
 
 ## Requirements
 
@@ -80,13 +95,19 @@ The same file can take a `"visibility"` array. Rules are checked top to bottom, 
 "visibility": [
   { "action": "show", "addons": ["ArmaReforger"],
     "prefabContains": ["/Medicine/", "/Equipment/Maps/", "/Equipment/Compass/", "/Equipment/Flashlights/",
-                       "/Equipment/Radios/", "/Equipment/Binoculars/", "/Equipment/Watches/"] },
+                       "/Equipment/Radios/", "/Equipment/Binoculars/", "/Equipment/Watches/", "/Equipment/Kits/",
+                       "/Equipment/Detonators/", "/Demining/", "/Accessories/ETool", "/Fuel/"] },
+  { "action": "show", "addons": ["ArmaReforger"],
+    "prefabContains": ["/Equipment/Mortars/", "/Equipment/Tripods/", "/Equipment/BallisticTable/",
+                       "/Misc/Sandbags/", "/Misc/BarbedTape/", "/Weapons/Ammo/Ammo_Shell_"] },
+  { "action": "show", "addons": ["ArmaReforger"],
+    "itemTypes": ["LETHAL_THROWABLE", "NON_LETHAL_THROWABLE", "EXPLOSIVES"] },
   { "action": "show", "addons": ["RHS_Core", "RHS_Content_01", "RHS_Content_02", "NCMGPS"] },
   { "action": "hide" }
 ]
 ```
 
-Reads as: keep vanilla medical/map/compass/flashlight/radio/binoculars/watch, keep everything from RHS and Simple GPS, hide the rest.
+Reads as: keep the vanilla gear RHS has no replacement for (medical, navigation, radios, binoculars, kits, tools, mortars and tripods with their rounds, grenades and mines), keep everything from RHS and Simple GPS, hide the rest — vanilla weapons, magazines, attachments and clothing disappear. Drop the second rule if you do not want mortars.
 
 More recipes (each is one entry of the `visibility` array):
 
@@ -115,7 +136,7 @@ Categories also exist as `Configs/ArsenalCategories/ARC_ArsenalCategories.conf` 
 | `m_aPrefabContains` | Prefab path must contain one of these substrings (case-insensitive) |
 | `m_aPrefabExcludes` | Prefab path must contain none of these |
 
-An item lands in the **first** category whose rules it satisfies, so order matters: narrow rules go first. That is how *Submachine Guns* works — the engine has no SMG type (mods tag them RIFLE), so it matches type RIFLE **and** a prefab name from a list (`smg`, `_mp5`, `mpx`, …) and sits above *Assault Rifles*. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why weapon categories *exclude* the `AMMUNITION` and `ATTACHMENT` modes (rather than require `WEAPON` — RHS leaves some rifles on the default mode) and *Ammunition* requires the mode only. Patterns are anchored where a bare word would hit something else: `_p90` (the 1P90 optic contains `p90`), `_ump` (`pump`).
+An item lands in the **first** category whose rules it satisfies, so order matters: narrow rules go first. That is how *Submachine Guns*, *Shotguns* and *Grenade Launchers* work — the engine has no such types (mods tag them RIFLE or ROCKET_LAUNCHER), so each matches the broad type **and** a prefab name from a list (`smg`, `_mp5`, `mpx`, … / `shotgun`, `m1014`, … / `gm94`, `m320`, …) and sits above *Assault Rifles*. The same goes for *Optics* / *Muzzle Devices* / *Lasers & Lights* / *Grips & Bipods* above the catch-all *Attachments*, *Helmets* / *Face & Eyewear* above *Headwear*, and *Navigation* / *Radios* / *Night Vision* / … above *Equipment*. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why weapon categories *exclude* the `AMMUNITION` and `ATTACHMENT` modes (rather than require `WEAPON` — RHS leaves some rifles on the default mode) and *Ammunition* requires the mode only. Patterns are anchored where a bare word would hit something else: `_p90` (the 1P90 optic contains `p90`), `_ump` (`pump`).
 
 The same rules let you map any mod's weapons: a category with `m_aPrefabContains {"rhs_"}` groups everything from RHS; `m_aPrefabExcludes` keeps a mod's launchers out of the vanilla one.
 

@@ -151,40 +151,130 @@ class ARC_ArsenalCategoryConfig
 
 	//------------------------------------------------------------------------------------------------
 	//! Same content as the shipped .conf, kept in script so a broken config never leaves the panel unfiltered.
+	//! Order matters: an item lands in the first category it satisfies, so name-based sub-classes
+	//! (SMGs, shotguns, optics, helmets, navigation...) sit above the broad type they are carved out of.
+	//! Verified against every vanilla and RHS catalog entry: nothing lands in "Other".
 	static ARC_ArsenalCategoryConfig CreateDefault()
 	{
 		ARC_ArsenalCategoryConfig config = new ARC_ArsenalCategoryConfig();
 		config.m_aCategories = {};
 
 		// Weapons: any mode except magazines/attachments. Requiring WEAPON would lose entries that mods
-		// leave on the default mode (RHS M4A1 Block 1, for example).
+		// leave on the default mode (RHS M4A1 Block 1, for example). Gear: also not deployable parts.
 		SCR_EArsenalItemMode notWeaponModes = SCR_EArsenalItemMode.AMMUNITION | SCR_EArsenalItemMode.ATTACHMENT;
-		SCR_EArsenalItemType throwableTypes = SCR_EArsenalItemType.LETHAL_THROWABLE | SCR_EArsenalItemType.NON_LETHAL_THROWABLE;
-		SCR_EArsenalItemType clothingTypes = SCR_EArsenalItemType.HEADWEAR | SCR_EArsenalItemType.TORSO | SCR_EArsenalItemType.LEGS
-			| SCR_EArsenalItemType.FOOTWEAR | SCR_EArsenalItemType.HANDWEAR;
-		SCR_EArsenalItemType carryTypes = SCR_EArsenalItemType.VEST_AND_WAIST | SCR_EArsenalItemType.BACKPACK | SCR_EArsenalItemType.RADIO_BACKPACK;
-		SCR_EArsenalItemType launcherTypes = SCR_EArsenalItemType.ROCKET_LAUNCHER | SCR_EArsenalItemType.MORTARS;
+		SCR_EArsenalItemMode notGearModes = notWeaponModes | SCR_EArsenalItemMode.SUPPORT_STATION;
 
-		// The engine has no SMG type (mods tag them RIFLE), so they are picked out by prefab name first.
-		// Patterns are anchored with separators where a bare word would hit something else ("p90" is
-		// also the 1P90 optic on AK-74Ms; "ump" is in "pump").
-		array<string> smgNames = {"/smg", "_smg", "_mp5", "_mpx", "_ump", "vityaz", "pp19", "pp2000", "ppsh", "_uzi", "kriss", "_p90", "_mp7", "kedr", "bizon", "_mp40", "sten_", "thompson"};
+		// no SMG type in the engine (mods tag them RIFLE): picked out by name
+		array<string> submachineGunsNames = {"/smg", "_smg", "/mp5", "_mp5", "_mpx", "_ump", "vityaz", "pp19", "pp2000", "ppsh", "_uzi", "kriss", "_p90", "_mp7", "kedr", "bizon", "_mp40", "sten_", "thompson", "evo3", "_mac10", "_mac11"};
+		Add(config, "Submachine Guns", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, submachineGunsNames, null, 0, notWeaponModes);
 
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Submachine Guns", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, smgNames, null, 0, notWeaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Assault Rifles", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, null, null, 0, notWeaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Sniper Rifles", ICON_SNIPERS, SCR_EArsenalItemType.SNIPER_RIFLE, 0, null, null, 0, notWeaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Machine Guns", ICON_MACHINE_GUNS, SCR_EArsenalItemType.MACHINE_GUN, 0, null, null, 0, notWeaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Pistols", ICON_PISTOLS, SCR_EArsenalItemType.PISTOL, 0, null, null, 0, notWeaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Launchers", ICON_LAUNCHERS, launcherTypes, 0, null, null, 0, notWeaponModes));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Ammunition", ICON_MAGAZINES, 0, SCR_EArsenalItemMode.AMMUNITION));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Attachments", ICON_OPTICS, 0, SCR_EArsenalItemMode.ATTACHMENT));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Throwables", ICON_GRENADES, throwableTypes, 0));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Explosives", ICON_EXPLOSIVES, SCR_EArsenalItemType.EXPLOSIVES, 0));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Clothing", ICON_JACKETS, clothingTypes, 0));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Vests and Backpacks", ICON_VESTS, carryTypes, 0));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Medical", ICON_MEDICAL, SCR_EArsenalItemType.HEAL, 0));
-		config.m_aCategories.Insert(ARC_ArsenalCategory.Create("Equipment", ICON_ACCESSORIES, SCR_EArsenalItemType.EQUIPMENT, 0));
+		// same trick as SMGs; empty (hidden) until a mod adds shotguns
+		array<string> shotgunsNames = {"shotgun", "/m590", "_m590", "m1014", "_ks23", "saiga12", "saiga-12", "_spas", "benelli", "mossberg", "_870", "_aa12", "_toz", "vepr12"};
+		Add(config, "Shotguns", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, shotgunsNames, null, 0, notWeaponModes);
+
+		// stand-alone launchers only (GM94, M320, M79); rifles with M203/GP25 stay rifles
+		array<string> grenadeLaunchersNames = {"/grenadelaunchers/", "/gl_", "gm94", "/m320", "_m320", "/m79", "_m79", "_rg6", "_mgl", "milkor"};
+		Add(config, "Grenade Launchers", ICON_LAUNCHERS, SCR_EArsenalItemType.ROCKET_LAUNCHER | SCR_EArsenalItemType.RIFLE, 0, grenadeLaunchersNames, null, 0, notWeaponModes);
+
+		Add(config, "Assault Rifles", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, null, null, 0, notWeaponModes);
+		Add(config, "Sniper Rifles", ICON_SNIPERS, SCR_EArsenalItemType.SNIPER_RIFLE, 0, null, null, 0, notWeaponModes);
+		Add(config, "Machine Guns", ICON_MACHINE_GUNS, SCR_EArsenalItemType.MACHINE_GUN, 0, null, null, 0, notWeaponModes);
+		Add(config, "Pistols", ICON_PISTOLS, SCR_EArsenalItemType.PISTOL, 0, null, null, 0, notWeaponModes);
+		// rocket launchers and mortar tubes; ballistic tables are tagged MORTARS and go to Navigation
+		array<string> launchersExcludes = {"ballistictable", "balistictable"};
+		Add(config, "Launchers", ICON_LAUNCHERS, SCR_EArsenalItemType.ROCKET_LAUNCHER | SCR_EArsenalItemType.MORTARS, 0, null, launchersExcludes, 0, notWeaponModes);
+
+		// turret boxes, rocket pods, pylons
+		Add(config, "Vehicle & Aircraft", ICON_LAUNCHERS, SCR_EArsenalItemType.VEHICLE | SCR_EArsenalItemType.HELICOPTER, 0);
+
+		Add(config, "Rockets & Shells", ICON_LAUNCHERS, SCR_EArsenalItemType.ROCKET_LAUNCHER | SCR_EArsenalItemType.MORTARS, SCR_EArsenalItemMode.AMMUNITION);
+		// UGL/GL rounds and flare cartridges: 40mm, VOG, GM94 magazines, 26.5mm flares
+		array<string> launcherRoundsNames = {"40mm", "40x46", "40x53", "43x30", "vog25", "vog30", "/gm94/", "ammo_grenade_", "ammo_flare", "_gp25"};
+		Add(config, "Launcher Rounds", ICON_GRENADES, 0, SCR_EArsenalItemMode.AMMUNITION, launcherRoundsNames);
+
+		Add(config, "Magazines", ICON_MAGAZINES, 0, SCR_EArsenalItemMode.AMMUNITION);
+		array<string> opticsNames = {"/optics/", "optic_", "_optic", "scope", "sight", "/magnifier", "_magnifier", "acog", "elcan", "eotech", "aimpoint", "_pso", "_1p", "kobra", "holo", "reddot", "_rds"};
+		Add(config, "Optics", ICON_OPTICS, 0, SCR_EArsenalItemMode.ATTACHMENT, opticsNames);
+
+		array<string> muzzleDevicesNames = {"/muzzle/", "suppressor", "silencer", "flashhider", "flash_hider", "compensator", "muzzlebrake", "muzzle_brake", "_brake", "_supr", "_sd."};
+		Add(config, "Muzzle Devices", ICON_OPTICS, 0, SCR_EArsenalItemMode.ATTACHMENT, muzzleDevicesNames);
+
+		array<string> lasersAndLightsNames = {"/lasers/", "/lights/", "laser", "flashlight", "weaponlight", "_light", "peq", "dbal", "perst", "surefire", "_lam", "klesch", "zenitco_2", "_2p", "_2d"};
+		Add(config, "Lasers & Lights", ICON_OPTICS, 0, SCR_EArsenalItemMode.ATTACHMENT, lasersAndLightsNames);
+
+		array<string> gripsAndBipodsNames = {"/grips/", "/bipods/", "grip", "bipod", "_rvg", "_afg", "handstop"};
+		Add(config, "Grips & Bipods", ICON_OPTICS, 0, SCR_EArsenalItemMode.ATTACHMENT, gripsAndBipodsNames);
+
+		// handguards, rail covers, bayonets, underbarrel launchers, stocks
+		Add(config, "Attachments", ICON_OPTICS, 0, SCR_EArsenalItemMode.ATTACHMENT);
+
+		Add(config, "Grenades", ICON_GRENADES, SCR_EArsenalItemType.LETHAL_THROWABLE, 0);
+		// smoke, flashbang, chemlights
+		Add(config, "Smokes & Signals", ICON_GRENADES, SCR_EArsenalItemType.NON_LETHAL_THROWABLE, 0);
+
+		// mines, demolition charges, detonators
+		Add(config, "Explosives", ICON_EXPLOSIVES, SCR_EArsenalItemType.EXPLOSIVES, 0);
+
+		array<string> helmetsNames = {"helmet", "helm_", "/helm", "_ssh", "sph4", "zsh"};
+		Add(config, "Helmets", ICON_JACKETS, SCR_EArsenalItemType.HEADWEAR, 0, helmetsNames);
+
+		array<string> faceAndEyewearNames = {"/eyewear/", "eyewear", "balaclava", "/mask", "mask_", "gasmask", "goggle", "glasses", "headphone", "headset", "shemagh", "keffiyeh", "scarf", "facewear", "facewrap", "facecover", "_beard"};
+		Add(config, "Face & Eyewear", ICON_JACKETS, SCR_EArsenalItemType.HEADWEAR, 0, faceAndEyewearNames);
+
+		// caps, hats, berets, boonies: any headwear not caught above
+		Add(config, "Headwear", ICON_JACKETS, SCR_EArsenalItemType.HEADWEAR, 0);
+
+		Add(config, "Jackets & Shirts", ICON_JACKETS, SCR_EArsenalItemType.TORSO, 0);
+		Add(config, "Trousers", ICON_JACKETS, SCR_EArsenalItemType.LEGS, 0);
+		Add(config, "Boots & Gloves", ICON_JACKETS, SCR_EArsenalItemType.FOOTWEAR | SCR_EArsenalItemType.HANDWEAR, 0);
+		Add(config, "Vests", ICON_VESTS, SCR_EArsenalItemType.VEST_AND_WAIST, 0);
+		// RHS modular vest pouches and armour plates are tagged EQUIPMENT
+		array<string> pouchesAndPlatesNames = {"/characters/vests/", "pouch", "armorplate", "armor_plate", "_plate_", "/plates/"};
+		Add(config, "Pouches & Plates", ICON_VESTS, SCR_EArsenalItemType.EQUIPMENT, 0, pouchesAndPlatesNames, null, 0, SCR_EArsenalItemMode.SUPPORT_STATION);
+
+		// manpack radios fall through to Radios
+		array<string> backpacksExcludes = {"/radios/", "radio_"};
+		Add(config, "Backpacks", ICON_VESTS, SCR_EArsenalItemType.BACKPACK | SCR_EArsenalItemType.RADIO_BACKPACK, 0, null, backpacksExcludes);
+
+		// bandages, tourniquets, morphine, saline, medical kits
+		Add(config, "Medical", ICON_MEDICAL, SCR_EArsenalItemType.HEAL, 0);
+
+		// map, compass, GPS, watch, DAGR, ballistic tables
+		array<string> navigationNames = {"/maps/", "map_", "/compass", "compass_", "/navigation/", "/gps", "gps_", "_gps", "dagr", "/watches/", "watch_", "ballistictable", "balistictable", "/orion/", "garmin", "foretrex"};
+		Add(config, "Navigation", ICON_ACCESSORIES, 0, 0, navigationNames, null, 0, notGearModes);
+
+		array<string> binocularsAndRangefindersNames = {"binocular", "rangefinder", "vector21", "lrf_", "_lrf", "spotting", "monocular"};
+		Add(config, "Binoculars & Rangefinders", ICON_ACCESSORIES, 0, 0, binocularsAndRangefindersNames, null, 0, notGearModes);
+
+		array<string> radiosNames = {"/radios/", "radio_", "_radio", "anprc", "/prc", "r187", "r148", "r107", "r168", "walkie"};
+		Add(config, "Radios", ICON_ACCESSORIES, 0, 0, radiosNames, null, 0, SCR_EArsenalItemMode.AMMUNITION | SCR_EArsenalItemMode.SUPPORT_STATION);
+
+		// goggles, mounts, counterweights, IR strobes and thermals
+		array<string> nightVisionNames = {"/nightvision/", "/thermals/", "nvg", "pvs", "gpnvg", "1pn", "thermal", "counterweight", "nv_goggle", "nightvision", "strobe", "ir_"};
+		Add(config, "Night Vision", ICON_ACCESSORIES, 0, 0, nightVisionNames, null, 0, notGearModes);
+
+		array<string> flaresAndLightsNames = {"/weapons/flares/", "/flashlights/", "flashlight", "flare_", "chemlight", "glowstick", "xmaslights", "torch_"};
+		Add(config, "Flares & Lights", ICON_ACCESSORIES, 0, 0, flaresAndLightsNames, null, 0, notGearModes);
+
+		// repair and rearming kits, entrenching tools, mine flags, jerrycans
+		array<string> toolsAndKitsNames = {"/kits/", "repairkit", "rearmingkit", "etool", "shovel", "toolkit", "wirecutter", "/demining/", "mineflag", "minedetector", "jerrycan", "/fuel/", "crowbar", "axe_", "_axe", "saw_"};
+		Add(config, "Tools & Kits", ICON_ACCESSORIES, 0, 0, toolsAndKitsNames);
+
+		// mortar and tripod parts, sandbags, barbed tape, ammo boxes
+		Add(config, "Deployables", ICON_ACCESSORIES, 0, SCR_EArsenalItemMode.SUPPORT_STATION);
+
+		array<string> patchesNames = {"/patches/", "patch_", "insignia", "armband"};
+		Add(config, "Patches", ICON_ACCESSORIES, 0, 0, patchesNames);
+
+		// everything else: personal belongings, mounts, misc accessories
+		Add(config, "Equipment", ICON_ACCESSORIES, SCR_EArsenalItemType.EQUIPMENT, 0);
 
 		return config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Add(notnull ARC_ArsenalCategoryConfig config, string name, ResourceName icon, SCR_EArsenalItemType types, SCR_EArsenalItemMode modes, array<string> prefabContains = null, array<string> prefabExcludes = null, SCR_EArsenalItemType typesExclude = 0, SCR_EArsenalItemMode modesExclude = 0)
+	{
+		config.m_aCategories.Insert(ARC_ArsenalCategory.Create(name, icon, types, modes, prefabContains, prefabExcludes, typesExclude, modesExclude));
 	}
 }

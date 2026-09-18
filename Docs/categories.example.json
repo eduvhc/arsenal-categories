@@ -15,6 +15,7 @@
       "prefabContains": [
         "/smg",
         "_smg",
+        "/mp5",
         "_mp5",
         "_mpx",
         "_ump",
@@ -30,7 +31,67 @@
         "bizon",
         "_mp40",
         "sten_",
-        "thompson"
+        "thompson",
+        "evo3",
+        "_mac10",
+        "_mac11"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Shotguns",
+      "icon": "{71648F15B3984B87}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_AssaultRifles.edds",
+      "itemTypes": [
+        "RIFLE"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
+      ],
+      "prefabContains": [
+        "shotgun",
+        "/m590",
+        "_m590",
+        "m1014",
+        "_ks23",
+        "saiga12",
+        "saiga-12",
+        "_spas",
+        "benelli",
+        "mossberg",
+        "_870",
+        "_aa12",
+        "_toz",
+        "vepr12"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Grenade Launchers",
+      "icon": "{10840233D666C940}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Launcher.edds",
+      "itemTypes": [
+        "ROCKET_LAUNCHER",
+        "RIFLE"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
+      ],
+      "prefabContains": [
+        "/grenadelaunchers/",
+        "/gl_",
+        "gm94",
+        "/m320",
+        "_m320",
+        "/m79",
+        "_m79",
+        "_rg6",
+        "_mgl",
+        "milkor"
       ],
       "prefabExcludes": []
     },
@@ -108,10 +169,64 @@
         "ATTACHMENT"
       ],
       "prefabContains": [],
+      "prefabExcludes": [
+        "ballistictable",
+        "balistictable"
+      ]
+    },
+    {
+      "name": "Vehicle & Aircraft",
+      "icon": "{10840233D666C940}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Launcher.edds",
+      "itemTypes": [
+        "VEHICLE",
+        "HELICOPTER"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [],
       "prefabExcludes": []
     },
     {
-      "name": "Ammunition",
+      "name": "Rockets & Shells",
+      "icon": "{10840233D666C940}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Launcher.edds",
+      "itemTypes": [
+        "ROCKET_LAUNCHER",
+        "MORTARS"
+      ],
+      "itemModes": [
+        "AMMUNITION"
+      ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Launcher Rounds",
+      "icon": "{233A8BC0520B1B8B}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Grenades.edds",
+      "itemTypes": [],
+      "itemModes": [
+        "AMMUNITION"
+      ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "40mm",
+        "40x46",
+        "40x53",
+        "43x30",
+        "vog25",
+        "vog30",
+        "/gm94/",
+        "ammo_grenade_",
+        "ammo_flare",
+        "_gp25"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Magazines",
       "icon": "{A3D157619860A564}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Magazines.edds",
       "itemTypes": [],
       "itemModes": [
@@ -120,6 +235,108 @@
       "itemTypesExclude": [],
       "itemModesExclude": [],
       "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Optics",
+      "icon": "{CB055708E982C0A5}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Optics.edds",
+      "itemTypes": [],
+      "itemModes": [
+        "ATTACHMENT"
+      ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "/optics/",
+        "optic_",
+        "_optic",
+        "scope",
+        "sight",
+        "/magnifier",
+        "_magnifier",
+        "acog",
+        "elcan",
+        "eotech",
+        "aimpoint",
+        "_pso",
+        "_1p",
+        "kobra",
+        "holo",
+        "reddot",
+        "_rds"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Muzzle Devices",
+      "icon": "{CB055708E982C0A5}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Optics.edds",
+      "itemTypes": [],
+      "itemModes": [
+        "ATTACHMENT"
+      ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "/muzzle/",
+        "suppressor",
+        "silencer",
+        "flashhider",
+        "flash_hider",
+        "compensator",
+        "muzzlebrake",
+        "muzzle_brake",
+        "_brake",
+        "_supr",
+        "_sd."
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Lasers & Lights",
+      "icon": "{CB055708E982C0A5}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Optics.edds",
+      "itemTypes": [],
+      "itemModes": [
+        "ATTACHMENT"
+      ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "/lasers/",
+        "/lights/",
+        "laser",
+        "flashlight",
+        "weaponlight",
+        "_light",
+        "peq",
+        "dbal",
+        "perst",
+        "surefire",
+        "_lam",
+        "klesch",
+        "zenitco_2",
+        "_2p",
+        "_2d"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Grips & Bipods",
+      "icon": "{CB055708E982C0A5}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Optics.edds",
+      "itemTypes": [],
+      "itemModes": [
+        "ATTACHMENT"
+      ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "/grips/",
+        "/bipods/",
+        "grip",
+        "bipod",
+        "_rvg",
+        "_afg",
+        "handstop"
+      ],
       "prefabExcludes": []
     },
     {
@@ -135,10 +352,21 @@
       "prefabExcludes": []
     },
     {
-      "name": "Throwables",
+      "name": "Grenades",
       "icon": "{233A8BC0520B1B8B}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Grenades.edds",
       "itemTypes": [
-        "LETHAL_THROWABLE",
+        "LETHAL_THROWABLE"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Smokes & Signals",
+      "icon": "{233A8BC0520B1B8B}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Grenades.edds",
+      "itemTypes": [
         "NON_LETHAL_THROWABLE"
       ],
       "itemModes": [],
@@ -160,12 +388,94 @@
       "prefabExcludes": []
     },
     {
-      "name": "Clothing",
+      "name": "Helmets",
       "icon": "{92245C15E122EDB2}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Jackets.edds",
       "itemTypes": [
-        "HEADWEAR",
-        "TORSO",
-        "LEGS",
+        "HEADWEAR"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "helmet",
+        "helm_",
+        "/helm",
+        "_ssh",
+        "sph4",
+        "zsh"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Face & Eyewear",
+      "icon": "{92245C15E122EDB2}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Jackets.edds",
+      "itemTypes": [
+        "HEADWEAR"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "/eyewear/",
+        "eyewear",
+        "balaclava",
+        "/mask",
+        "mask_",
+        "gasmask",
+        "goggle",
+        "glasses",
+        "headphone",
+        "headset",
+        "shemagh",
+        "keffiyeh",
+        "scarf",
+        "facewear",
+        "facewrap",
+        "facecover",
+        "_beard"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Headwear",
+      "icon": "{92245C15E122EDB2}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Jackets.edds",
+      "itemTypes": [
+        "HEADWEAR"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Jackets & Shirts",
+      "icon": "{92245C15E122EDB2}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Jackets.edds",
+      "itemTypes": [
+        "TORSO"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Trousers",
+      "icon": "{92245C15E122EDB2}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Jackets.edds",
+      "itemTypes": [
+        "LEGS"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Boots & Gloves",
+      "icon": "{92245C15E122EDB2}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Jackets.edds",
+      "itemTypes": [
         "FOOTWEAR",
         "HANDWEAR"
       ],
@@ -176,10 +486,42 @@
       "prefabExcludes": []
     },
     {
-      "name": "Vests and Backpacks",
+      "name": "Vests",
       "icon": "{2DCA69EEB8628C06}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Vests.edds",
       "itemTypes": [
-        "VEST_AND_WAIST",
+        "VEST_AND_WAIST"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Pouches & Plates",
+      "icon": "{2DCA69EEB8628C06}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Vests.edds",
+      "itemTypes": [
+        "EQUIPMENT"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "SUPPORT_STATION"
+      ],
+      "prefabContains": [
+        "/characters/vests/",
+        "pouch",
+        "armorplate",
+        "armor_plate",
+        "_plate_",
+        "/plates/"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Backpacks",
+      "icon": "{2DCA69EEB8628C06}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Vests.edds",
+      "itemTypes": [
         "BACKPACK",
         "RADIO_BACKPACK"
       ],
@@ -187,7 +529,10 @@
       "itemTypesExclude": [],
       "itemModesExclude": [],
       "prefabContains": [],
-      "prefabExcludes": []
+      "prefabExcludes": [
+        "/radios/",
+        "radio_"
+      ]
     },
     {
       "name": "Medical",
@@ -199,6 +544,187 @@
       "itemTypesExclude": [],
       "itemModesExclude": [],
       "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Navigation",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT",
+        "SUPPORT_STATION"
+      ],
+      "prefabContains": [
+        "/maps/",
+        "map_",
+        "/compass",
+        "compass_",
+        "/navigation/",
+        "/gps",
+        "gps_",
+        "_gps",
+        "dagr",
+        "/watches/",
+        "watch_",
+        "ballistictable",
+        "balistictable",
+        "/orion/",
+        "garmin",
+        "foretrex"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Binoculars & Rangefinders",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT",
+        "SUPPORT_STATION"
+      ],
+      "prefabContains": [
+        "binocular",
+        "rangefinder",
+        "vector21",
+        "lrf_",
+        "_lrf",
+        "spotting",
+        "monocular"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Radios",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "SUPPORT_STATION"
+      ],
+      "prefabContains": [
+        "/radios/",
+        "radio_",
+        "_radio",
+        "anprc",
+        "/prc",
+        "r187",
+        "r148",
+        "r107",
+        "r168",
+        "walkie"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Night Vision",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT",
+        "SUPPORT_STATION"
+      ],
+      "prefabContains": [
+        "/nightvision/",
+        "/thermals/",
+        "nvg",
+        "pvs",
+        "gpnvg",
+        "1pn",
+        "thermal",
+        "counterweight",
+        "nv_goggle",
+        "nightvision",
+        "strobe",
+        "ir_"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Flares & Lights",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT",
+        "SUPPORT_STATION"
+      ],
+      "prefabContains": [
+        "/weapons/flares/",
+        "/flashlights/",
+        "flashlight",
+        "flare_",
+        "chemlight",
+        "glowstick",
+        "xmaslights",
+        "torch_"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Tools & Kits",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "/kits/",
+        "repairkit",
+        "rearmingkit",
+        "etool",
+        "shovel",
+        "toolkit",
+        "wirecutter",
+        "/demining/",
+        "mineflag",
+        "minedetector",
+        "jerrycan",
+        "/fuel/",
+        "crowbar",
+        "axe_",
+        "_axe",
+        "saw_"
+      ],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Deployables",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [],
+      "itemModes": [
+        "SUPPORT_STATION"
+      ],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Patches",
+      "icon": "{CDF94F179A33CFB9}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_Accessories.edds",
+      "itemTypes": [],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [],
+      "prefabContains": [
+        "/patches/",
+        "patch_",
+        "insignia",
+        "armband"
+      ],
       "prefabExcludes": []
     },
     {
