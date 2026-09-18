@@ -224,7 +224,7 @@ class ARC_ArsenalCategoryConfig
 		SCR_EArsenalItemMode notGearModes = notWeaponModes | SCR_EArsenalItemMode.SUPPORT_STATION;
 
 		// no SMG type in the engine (mods tag them RIFLE): picked out by name
-		array<string> submachineGunsNames = {"/smg", "_smg", "/mp5", "_mp5", "_mpx", "_ump", "vityaz", "pp19", "pp2000", "ppsh", "_uzi", "kriss", "_p90", "_mp7", "kedr", "bizon", "_mp40", "sten_", "thompson", "evo3", "_mac10", "_mac11"};
+		array<string> submachineGunsNames = {"/smg", "_smg", "/mp5", "_mp5", "_mpx", "_ump", "vityaz", "pp19", "pp2000", "ppsh", "_uzi", "kriss", "_p90", "_mp7", "kedr", "bizon", "_mp40", "sten_", "thompson", "evo3", "scorpion", "_mac10", "_mac11"};
 		Add(config, "Submachine Guns", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, submachineGunsNames, null, 0, notWeaponModes);
 
 		// same trick as SMGs; empty (hidden) until a mod adds shotguns
@@ -237,6 +237,10 @@ class ARC_ArsenalCategoryConfig
 
 		Add(config, "Assault Rifles", ICON_RIFLES, SCR_EArsenalItemType.RIFLE, 0, null, null, 0, notWeaponModes);
 		Add(config, "Sniper Rifles", ICON_SNIPERS, SCR_EArsenalItemType.SNIPER_RIFLE, 0, null, null, 0, notWeaponModes);
+		// mods often leave DMRs/anti-materiel rifles on the RIFLE type: picked out by name; typed snipers stay above
+		array<string> marksmanRiflesNames = {"sr25", "/m110", "_m110", "_dmr", "marksman", "mk12", "mk14", "m39emr", "hk417", "m107", "barrett", "_awm", "l115", "t5000", "orsis", "m2010", "_msr", "axmc", "_m14"};
+		Add(config, "Marksman Rifles", ICON_SNIPERS, SCR_EArsenalItemType.RIFLE, 0, marksmanRiflesNames, null, 0, notWeaponModes);
+
 		Add(config, "Machine Guns", ICON_MACHINE_GUNS, SCR_EArsenalItemType.MACHINE_GUN, 0, null, null, 0, notWeaponModes);
 		Add(config, "Pistols", ICON_PISTOLS, SCR_EArsenalItemType.PISTOL, 0, null, null, 0, notWeaponModes);
 		// rocket launchers and mortar tubes; ballistic tables are tagged MORTARS and go to Navigation

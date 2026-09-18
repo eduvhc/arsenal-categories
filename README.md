@@ -8,18 +8,18 @@ Source: https://github.com/eduvhc/arsenal-categories
 
 Vanilla lists every item an arsenal offers in one flat grid. This addon adds a category column next to that grid, each button showing its item count, so you only scroll through what you are looking for. It works with any arsenal box (vanilla, RHS, WCS, …) because it hooks the shared arsenal UI rather than any faction's data.
 
-The 39 default categories, in display order (empty ones are hidden, so a vanilla-only arsenal shows far fewer):
+The 40 default categories, in display order (empty ones are hidden, so a vanilla-only arsenal shows far fewer):
 
 | Group | Categories |
 |---|---|
-| Weapons | Submachine Guns · Shotguns · Grenade Launchers · Assault Rifles · Sniper Rifles · Machine Guns · Pistols · Launchers |
+| Weapons | Submachine Guns · Shotguns · Grenade Launchers · Assault Rifles · Sniper Rifles · Marksman Rifles · Machine Guns · Pistols · Launchers |
 | Ammunition | Vehicle & Aircraft · Rockets & Shells · Launcher Rounds · Magazines |
 | Attachments | Optics · Muzzle Devices · Lasers & Lights · Grips & Bipods · Attachments |
 | Throwables | Grenades · Smokes & Signals · Explosives |
 | Clothing | Helmets · Face & Eyewear · Headwear · Jackets & Shirts · Trousers · Boots & Gloves · Vests · Pouches & Plates · Backpacks |
 | Equipment | Medical · Navigation · Binoculars & Rangefinders · Radios · Night Vision · Flares & Lights · Tools & Kits · Deployables · Patches · Equipment |
 
-*Navigation* is map, compass, GPS, watch, DAGR and ballistic tables; *Tools & Kits* is repair/rearming kits, entrenching tools, mine flags and jerrycans; *Deployables* is mortar and tripod parts, sandbags and barbed tape. The set was checked against every vanilla and RHS catalog entry (about 3 000 prefabs): nothing lands in *Other*.
+*Marksman Rifles* catches DMRs and anti-materiel rifles that mods leave on the RIFLE type (SR25, M110, M107, ORSIS…; typed snipers stay in *Sniper Rifles*); *Navigation* is map, compass, GPS, watch, DAGR and ballistic tables; *Tools & Kits* is repair/rearming kits, entrenching tools, mine flags and jerrycans; *Deployables* is mortar and tripod parts, sandbags and barbed tape. The set was checked against every vanilla and RHS catalog entry (about 3 000 prefabs): nothing lands in *Other*.
 
 ## Requirements
 

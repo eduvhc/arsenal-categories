@@ -50,6 +50,7 @@
         "sten_",
         "thompson",
         "evo3",
+        "scorpion",
         "_mac10",
         "_mac11"
       ],
@@ -140,6 +141,41 @@
         "ATTACHMENT"
       ],
       "prefabContains": [],
+      "prefabExcludes": []
+    },
+    {
+      "name": "Marksman Rifles",
+      "icon": "{A2B4C0BFBECE6400}UI/Textures/Editor/Attributes/Arsenal/Attribute_Arsenal_SniperRifles.edds",
+      "itemTypes": [
+        "RIFLE"
+      ],
+      "itemModes": [],
+      "itemTypesExclude": [],
+      "itemModesExclude": [
+        "AMMUNITION",
+        "ATTACHMENT"
+      ],
+      "prefabContains": [
+        "sr25",
+        "/m110",
+        "_m110",
+        "_dmr",
+        "marksman",
+        "mk12",
+        "mk14",
+        "m39emr",
+        "hk417",
+        "m107",
+        "barrett",
+        "_awm",
+        "l115",
+        "t5000",
+        "orsis",
+        "m2010",
+        "_msr",
+        "axmc",
+        "_m14"
+      ],
       "prefabExcludes": []
     },
     {
@@ -810,6 +846,20 @@
         "RHS_Content_01",
         "RHS_Content_02",
         "NCMGPS"
+      ]
+    },
+    {
+      "action": "show",
+      "addons": [
+        "CZScorpionSMG",
+        "NastyKrissVector",
+        "NastyMP7",
+        "NastySR25",
+        "M110MarksmanRifle",
+        "FORTEXORSIST5000",
+        "M107A1BARRETAntiMaterial",
+        "Suppressors",
+        "RISLaserAttachments"
       ]
     },
     {
