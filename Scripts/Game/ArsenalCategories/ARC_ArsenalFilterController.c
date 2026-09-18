@@ -93,6 +93,11 @@ class ARC_ArsenalFilterController
 		return true;
 	}
 
+	//! Category the player had selected in the arsenal they last browsed, so closing and reopening
+	//! the inventory at the same box does not throw them back to "All".
+	protected static BaseInventoryStorageComponent s_LastStorage;
+	protected static int s_iLastCategory = ARC_ArsenalFilterBar.ALL_INDEX;
+
 	//------------------------------------------------------------------------------------------------
 	//! Make sure the list matches the arsenal storage: create it on first sight of an arsenal, keep
 	//! it on later refreshes of the same arsenal, rebuild it when the arsenal contents changed,
@@ -111,14 +116,20 @@ class ARC_ArsenalFilterController
 			return;
 		}
 
-		// Switching to a different arsenal starts from "All" again.
+		// Switching to a different arsenal starts from "All" again; the same arsenal as last time
+		// (typically the inventory reopened at the same box) restores the last choice.
 		if (storage != m_Storage)
 		{
 			Destroy();
 			m_Storage = storage;
 			m_iLastItemCount = -1;
 			m_iSelectedCategory = ARC_ArsenalFilterBar.ALL_INDEX;
+			if (storage == s_LastStorage)
+				m_iSelectedCategory = s_iLastCategory;
 		}
+
+		s_LastStorage = storage;
+		s_iLastCategory = m_iSelectedCategory;
 
 		array<SCR_ArsenalItem> arsenalItems = {};
 		if (!arsenal.GetFilteredArsenalItems(arsenalItems))
@@ -220,6 +231,7 @@ class ARC_ArsenalFilterController
 	//------------------------------------------------------------------------------------------------
 	protected void OnBarCategoryChanged(int categoryIndex)
 	{
+		s_iLastCategory = categoryIndex;
 		if (categoryIndex == m_iSelectedCategory)
 			return;
 

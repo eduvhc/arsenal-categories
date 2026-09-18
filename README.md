@@ -37,6 +37,7 @@ Load it on the server like any other addon; clients receive it automatically. Wi
 - Buttons are the vanilla `WLib_ButtonTextImage` widget (icon + caption), so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
 - Smarter **Buy** (right-click on an arsenal item): magazines go to a pouch instead of into the weapon, buying a weapon into an occupied holster slot swaps it (old one refunded), rejected items fall back to other storages. Each is a switch in the JSON `buy` object.
 - **Attachments while inspecting**: with an arsenal open, the row under an attachment slot also lists the arsenal's compatible attachments and magazines, buyable straight onto the weapon.
+- Rank-locked items stay greyed with the vanilla rank hint (the tiles are vanilla arsenal slots, in the grid and in the inspect row). Gamepad and keyboard: left from the item grid lands on the categories, right from the last category column goes back to the grid. Reopening the inventory at the same arsenal restores the category you had selected.
 
 ## Customising the categories
 

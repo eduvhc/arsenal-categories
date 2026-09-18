@@ -276,6 +276,8 @@ OverlayWidgetClass {
        Slot LayoutSlot "{607A8805BE33FBA4}" {
         Padding -2 -2 -2 -2
        }
+       "Left rule" Explicit
+       "Left target" "ARC_Categories"
        RowFill {
        }
        ColumnFill {

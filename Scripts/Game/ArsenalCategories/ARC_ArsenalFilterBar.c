@@ -22,6 +22,7 @@ class ARC_ArsenalFilterBar
 	static const int OTHER_INDEX = -2;
 	static const string PANEL_HOST = "ARC_Categories";
 	static const string PANEL_SCROLL = "ARC_CategoriesScroll";
+	static const string ITEM_GRID = "GridLayout0";
 	static const string SIDEBAR_HOST = "InventoryContent";
 	static const int SIDEBAR_ZORDER = -1;
 	static const float SIDEBAR_WIDTH = 200;
@@ -131,6 +132,9 @@ class ARC_ArsenalFilterBar
 		{
 			AddButton(categoryIndices[i], label, icons[i]);
 		}
+
+		if (m_bPanelGrid)
+			LinkGridNavigation();
 
 		Select(ALL_INDEX, false);
 		PrintFormat("[ARC] Filter list created with %1 button(s)", m_aButtons.Count());
@@ -263,6 +267,19 @@ class ARC_ArsenalFilterBar
 		button.m_OnClicked.Insert(OnButtonClicked);
 		m_aButtons.Insert(button);
 		m_aButtonCategories.Insert(categoryIndex);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gamepad / keyboard: right from the last column of buttons lands on the item grid; the grid's
+	//! own left rule (set in the layout) comes back to the category grid.
+	protected void LinkGridNavigation()
+	{
+		int lastColumn = (m_aButtons.Count() - 1) / m_iPerColumn;
+		foreach (int i, SCR_ButtonTextComponent button : m_aButtons)
+		{
+			if (button && button.GetRootWidget() && i / m_iPerColumn == lastColumn)
+				button.GetRootWidget().SetNavigation(WidgetNavigationDirection.RIGHT, WidgetNavigationRuleType.EXPLICIT, ITEM_GRID);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
