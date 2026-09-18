@@ -4,6 +4,7 @@
 modded class SCR_InventoryStorageLootUI
 {
 	protected ref ARC_ArsenalFilterController m_ARC_Filter;
+	protected ref array<IEntity> m_aARC_PendingItems;
 
 	//------------------------------------------------------------------------------------------------
 	override void HandlerAttached(Widget w)
@@ -17,6 +18,8 @@ modded class SCR_InventoryStorageLootUI
 	//------------------------------------------------------------------------------------------------
 	override event void HandlerDeattached(Widget w)
 	{
+		GetGame().GetCallqueue().Remove(ARC_SortAndShowChunk);
+
 		if (m_ARC_Filter)
 		{
 			m_ARC_Filter.m_OnCategoryChanged.Remove(ARC_OnCategoryChanged);
@@ -80,5 +83,68 @@ modded class SCR_InventoryStorageLootUI
 	protected void ARC_OnCategoryChanged()
 	{
 		GetGame().GetCallqueue().CallLater(Refresh, 0, false);
+	}
+	//------------------------------------------------------------------------------------------------
+	//! Arsenal listings are built in chunks: the first slotsPerFrame tiles now, the rest one chunk per
+	//! frame, each chunk re-sorting and re-showing the current page. A 300-item RHS arsenal then
+	//! opens on the first frame instead of after all tiles exist. Arsenal items are unique preview
+	//! entities, so the stacking pass of the vanilla method is not needed for them; every other
+	//! storage (ground loot, crates) keeps the vanilla path.
+	override protected void UpdateOwnedSlots(notnull array<IEntity> pItemsInStorage)
+	{
+		GetGame().GetCallqueue().Remove(ARC_SortAndShowChunk);
+
+		int perFrame = ARC_ArsenalCategoryConfig.GetActiveLayout().GetSlotsPerFrame();
+		if (perFrame <= 0 || pItemsInStorage.Count() <= perFrame || !ARC_ArsenalFilterController.FindArsenal(GetCurrentNavigationStorage()))
+		{
+			super.UpdateOwnedSlots(pItemsInStorage);
+			return;
+		}
+
+		DeleteSlots();
+
+		m_aARC_PendingItems = {};
+		m_aARC_PendingItems.Copy(pItemsInStorage);
+		ARC_CreateSlotChunk(0, perFrame);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ARC_CreateSlotChunk(int from, int amount)
+	{
+		if (!m_aARC_PendingItems || !m_wGrid)
+			return;
+
+		int end = Math.ClampInt(from + amount, 0, m_aARC_PendingItems.Count());
+		for (int i = from; i < end; i++)
+		{
+			IEntity item = m_aARC_PendingItems[i];
+			if (!item)
+				continue;
+
+			InventoryItemComponent itemComponent = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
+			if (!itemComponent)
+				continue;
+
+			SCR_InventorySlotUI slot = CreateSlotUI(itemComponent);
+			if (slot)
+				m_aSlots.Insert(slot);
+		}
+
+		if (end >= m_aARC_PendingItems.Count())
+		{
+			m_aARC_PendingItems = null;
+			return;
+		}
+
+		// The caller sorts and shows the first chunk itself; later chunks do it here.
+		GetGame().GetCallqueue().Call(ARC_SortAndShowChunk, end, amount);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ARC_SortAndShowChunk(int from, int amount)
+	{
+		ARC_CreateSlotChunk(from, amount);
+		SortSlots();
+		ShowPage(m_iLastShownPage);
 	}
 }

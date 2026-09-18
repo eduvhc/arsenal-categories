@@ -4,13 +4,17 @@
     "columns": 8,
     "rows": 8,
     "categoriesPerColumn": 11,
-    "categoryWidth": 200
+    "categoryWidth": 200,
+    "slotsPerFrame": 48
   },
   "buy": {
     "magazinesToStorage": true,
     "weaponSwap": true,
     "fallbackStorages": true,
     "arsenalAttachments": true
+  },
+  "loadouts": {
+    "persist": true
   },
   "categories": [
     {

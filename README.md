@@ -37,6 +37,7 @@ Load it on the server like any other addon; clients receive it automatically. Wi
 - Buttons are the vanilla `WLib_ButtonTextImage` widget (icon + caption), so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
 - Smarter **Buy** (right-click on an arsenal item): magazines go to a pouch instead of into the weapon, buying a weapon into an occupied holster slot swaps it (old one refunded), rejected items fall back to other storages. Each is a switch in the JSON `buy` object.
 - **Attachments while inspecting**: with an arsenal open, the row under an attachment slot also lists the arsenal's compatible attachments and magazines, buyable straight onto the weapon.
+- Saved loadouts survive server restarts (`loadouts.persist`), and big arsenals open instantly because tiles are created over a few frames (`layout.slotsPerFrame`).
 - Rank-locked items stay greyed with the vanilla rank hint (the tiles are vanilla arsenal slots, in the grid and in the inspect row). Gamepad and keyboard: left from the item grid lands on the categories, right from the last category column goes back to the grid. Reopening the inventory at the same arsenal restores the category you had selected.
 
 ## Customising the categories
@@ -70,7 +71,7 @@ $profile:ArsenalCategories/categories.json
 The optional `"layout"` object shapes the panel (values are clamped to sane ranges; missing keys keep these defaults):
 
 ```json
-"layout": { "widePanel": true, "columns": 8, "rows": 8, "categoriesPerColumn": 11, "categoryWidth": 200 }
+"layout": { "widePanel": true, "columns": 8, "rows": 8, "categoriesPerColumn": 11, "categoryWidth": 200, "slotsPerFrame": 48 }
 ```
 
 | Key | Meaning |
@@ -79,6 +80,7 @@ The optional `"layout"` object shapes the panel (values are clamped to sane rang
 | `columns`, `rows` | Item grid size of the wide panel (vanilla: 6 × 8) |
 | `categoriesPerColumn` | Category buttons per column before wrapping into the next |
 | `categoryWidth` | Button width in pixels |
+| `slotsPerFrame` | Arsenal tiles created per frame; the rest follow on the next frames, so a 300-item arsenal opens without a hitch. `0` = all at once (vanilla) |
 
 The optional `"buy"` object changes what right-click / **Buy** on an arsenal item does (WCS behaviour; all default to `true`):
 
@@ -92,6 +94,16 @@ The optional `"buy"` object changes what right-click / **Buy** on an arsenal ite
 | `weaponSwap` | Buying a weapon whose holster slot (primary/secondary) is occupied refunds the old weapon and takes the new one in one go. The server runs the vanilla refund and request handlers with all their checks; if the refund is rejected nothing is bought |
 | `fallbackStorages` | When the best-fit storage rejects an item (grenades, mines, ...), equipment and deposit storages are tried before giving up |
 | `arsenalAttachments` | While inspecting a weapon next to an arsenal, clicking an attachment slot lists the arsenal's compatible optics / muzzle devices / lasers / magazines after the ones you carry, as buyable tiles; right-click buys one straight onto the weapon (or into a pouch when the slot is taken). The row is as wide as the item grid |
+
+The optional `"loadouts"` object is server-side:
+
+```json
+"loadouts": { "persist": true }
+```
+
+| Key | Meaning |
+|---|---|
+| `persist` | The loadout a player saves at an arsenal (the vanilla / RHS *Save loadout* action) is written to `$profile:ArsenalCategories/loadouts/<player UUID>.json` and offered again when they reconnect, even after a server restart. Clearing the loadout deletes the file. Vanilla only keeps it in memory (or in Conflict save games) |
 
 Category keys:
 
@@ -167,7 +179,7 @@ Categories also exist as `Configs/ArsenalCategories/ARC_ArsenalCategories.conf` 
 | `m_aPrefabContains` | Prefab path must contain one of these substrings (case-insensitive) |
 | `m_aPrefabExcludes` | Prefab path must contain none of these |
 
-The config's *Layout* and *Buy* categories hold the same settings as the JSON `layout` and `buy` objects (`m_bWidePanel`, `m_iGridColumns`, `m_iGridRows`, `m_iCategoriesPerColumn`, `m_iCategoryWidth`, `m_bMagazinesToStorage`, `m_bWeaponSwap`, `m_bFallbackStorages`, `m_bArsenalAttachments`).
+The config's *Layout* and *Buy* categories hold the same settings as the JSON `layout` and `buy` objects (`m_bWidePanel`, `m_iGridColumns`, `m_iGridRows`, `m_iCategoriesPerColumn`, `m_iCategoryWidth`, `m_bMagazinesToStorage`, `m_bWeaponSwap`, `m_bFallbackStorages`, `m_bArsenalAttachments`, `m_iSlotsPerFrame`, `m_bPersistLoadouts`).
 
 An item lands in the **first** category whose rules it satisfies, so order matters: narrow rules go first. That is how *Submachine Guns*, *Shotguns* and *Grenade Launchers* work — the engine has no such types (mods tag them RIFLE or ROCKET_LAUNCHER), so each matches the broad type **and** a prefab name from a list (`smg`, `_mp5`, `mpx`, … / `shotgun`, `m1014`, … / `gm94`, `m320`, …) and sits above *Assault Rifles*. The same goes for *Optics* / *Muzzle Devices* / *Lasers & Lights* / *Grips & Bipods* above the catch-all *Attachments*, *Helmets* / *Face & Eyewear* above *Headwear*, and *Navigation* / *Radios* / *Night Vision* / … above *Equipment*. Magazines carry the type of their weapon but mode `AMMUNITION`, which is why weapon categories *exclude* the `AMMUNITION` and `ATTACHMENT` modes (rather than require `WEAPON` — RHS leaves some rifles on the default mode) and *Ammunition* requires the mode only. Patterns are anchored where a bare word would hit something else: `_p90` (the 1P90 optic contains `p90`), `_ump` (`pump`).
 
@@ -196,6 +208,7 @@ Scripts/Game/ArsenalCategories/
   ARC_InventorySlotWeaponSlotsUI.c       modded holster slot: exposes its slot type for the weapon swap
   ARC_InventoryAttachmentStorageUI.c     modded inspect row: adds the arsenal's compatible attachments as tiles
   ARC_InventorySearchPredicate.c         modded predicate: matches one entity (arsenal preview items)
+  ARC_ArsenalManagerComponent.c          server: saved loadouts written to / restored from $profile
   ARC_ResourcePlayerControllerInventoryComponent.c  server: weapon swap = vanilla refund + vanilla request
   ARC_Settings.c                         layout and buy settings (JSON layout / buy objects, .conf)
 Configs/ArsenalCategories/

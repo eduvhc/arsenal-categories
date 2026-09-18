@@ -41,6 +41,9 @@ class ARC_ArsenalCategoryConfig
 	[Attribute("200", UIWidgets.Slider, "Width of a category button (px)", "120 320 1", category: "Layout")]
 	protected int m_iCategoryWidth;
 
+	[Attribute("48", UIWidgets.Slider, "Arsenal tiles created per frame, the rest follow on later frames; 0 = all at once", "0 400 1", category: "Layout")]
+	protected int m_iSlotsPerFrame;
+
 	[Attribute("1", UIWidgets.CheckBox, "Bought magazines go to a pouch or backpack instead of being loaded into the weapon", category: "Buy")]
 	protected bool m_bMagazinesToStorage;
 
@@ -52,6 +55,9 @@ class ARC_ArsenalCategoryConfig
 
 	[Attribute("1", UIWidgets.CheckBox, "Weapon inspection lists the arsenal's compatible attachments and magazines per slot, buyable straight onto the weapon", category: "Buy")]
 	protected bool m_bArsenalAttachments;
+
+	[Attribute("1", UIWidgets.CheckBox, "Server: keep saved arsenal loadouts on disk across restarts", category: "Loadouts")]
+	protected bool m_bPersistLoadouts;
 
 	//! Layout in force; built from the JSON "layout" object or from the attributes above.
 	protected ref ARC_Settings m_Layout;
@@ -88,7 +94,7 @@ class ARC_ArsenalCategoryConfig
 	ARC_Settings GetLayout()
 	{
 		if (!m_Layout)
-			m_Layout = ARC_Settings.Create(m_bWidePanel, m_iGridColumns, m_iGridRows, m_iCategoriesPerColumn, m_iCategoryWidth, m_bMagazinesToStorage, m_bWeaponSwap, m_bFallbackStorages, m_bArsenalAttachments);
+			m_Layout = ARC_Settings.Create(m_bWidePanel, m_iGridColumns, m_iGridRows, m_iCategoriesPerColumn, m_iCategoryWidth, m_bMagazinesToStorage, m_bWeaponSwap, m_bFallbackStorages, m_bArsenalAttachments, m_iSlotsPerFrame, m_bPersistLoadouts);
 
 		return m_Layout;
 	}

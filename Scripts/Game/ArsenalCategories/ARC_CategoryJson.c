@@ -104,6 +104,7 @@ class ARC_CategoryJson
 		context.WriteValue("rows", settings.GetRows());
 		context.WriteValue("categoriesPerColumn", settings.GetCategoriesPerColumn());
 		context.WriteValue("categoryWidth", settings.GetCategoryWidth());
+		context.WriteValue("slotsPerFrame", settings.GetSlotsPerFrame());
 		context.EndObject();
 
 		context.StartObject("buy");
@@ -111,6 +112,10 @@ class ARC_CategoryJson
 		context.WriteValue("weaponSwap", settings.IsWeaponSwap());
 		context.WriteValue("fallbackStorages", settings.IsFallbackStorages());
 		context.WriteValue("arsenalAttachments", settings.IsArsenalAttachments());
+		context.EndObject();
+
+		context.StartObject("loadouts");
+		context.WriteValue("persist", settings.IsPersistLoadouts());
 		context.EndObject();
 
 		int count = categories.Count();
@@ -268,6 +273,8 @@ class ARC_CategoryJson
 		bool weaponSwap = defaults.IsWeaponSwap();
 		bool fallbackStorages = defaults.IsFallbackStorages();
 		bool arsenalAttachments = defaults.IsArsenalAttachments();
+		int slotsPerFrame = defaults.GetSlotsPerFrame();
+		bool persistLoadouts = defaults.IsPersistLoadouts();
 
 		if (context.StartObject("layout"))
 		{
@@ -276,6 +283,7 @@ class ARC_CategoryJson
 			context.ReadValue("rows", rows);
 			context.ReadValue("categoriesPerColumn", perColumn);
 			context.ReadValue("categoryWidth", width);
+			context.ReadValue("slotsPerFrame", slotsPerFrame);
 			context.EndObject();
 		}
 
@@ -288,7 +296,13 @@ class ARC_CategoryJson
 			context.EndObject();
 		}
 
-		return ARC_Settings.Create(widePanel, columns, rows, perColumn, width, magazinesToStorage, weaponSwap, fallbackStorages, arsenalAttachments);
+		if (context.StartObject("loadouts"))
+		{
+			context.ReadValue("persist", persistLoadouts);
+			context.EndObject();
+		}
+
+		return ARC_Settings.Create(widePanel, columns, rows, perColumn, width, magazinesToStorage, weaponSwap, fallbackStorages, arsenalAttachments, slotsPerFrame, persistLoadouts);
 	}
 
 	//------------------------------------------------------------------------------------------------

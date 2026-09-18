@@ -11,6 +11,7 @@ class ARC_Settings
 	static const int MAX_PER_COLUMN = 30;
 	static const int MIN_CATEGORY_WIDTH = 120;
 	static const int MAX_CATEGORY_WIDTH = 320;
+	static const int MAX_SLOTS_PER_FRAME = 400;
 
 	// ---- layout ----
 	//! Use the wide arsenal panel (own layout for the Vicinity panel: categories inside the panel,
@@ -24,6 +25,9 @@ class ARC_Settings
 	protected int m_iCategoriesPerColumn = 11;
 	//! Width of one category button in pixels.
 	protected int m_iCategoryWidth = 200;
+	//! Arsenal tiles created per frame; the rest follow on the next frames so a 300-item arsenal
+	//! opens without a hitch. 0 = all at once (vanilla).
+	protected int m_iSlotsPerFrame = 48;
 
 	// ---- buy (take from the arsenal with right-click / the Buy button) ----
 	//! Magazines and other ammunition go to a deposit storage (pouch, backpack) before anything
@@ -37,8 +41,13 @@ class ARC_Settings
 	//! compatible attachments and magazines as buyable tiles; buying puts them straight on the weapon.
 	protected bool m_bArsenalAttachments = true;
 
+	// ---- loadouts ----
+	//! Keep the loadout a player saved at an arsenal on disk ($profile:ArsenalCategories/loadouts),
+	//! so it survives server restarts and is offered again when the player reconnects.
+	protected bool m_bPersistLoadouts = true;
+
 	//------------------------------------------------------------------------------------------------
-	static ARC_Settings Create(bool widePanel, int columns, int rows, int categoriesPerColumn, int categoryWidth, bool magazinesToStorage = true, bool weaponSwap = true, bool fallbackStorages = true, bool arsenalAttachments = true)
+	static ARC_Settings Create(bool widePanel, int columns, int rows, int categoriesPerColumn, int categoryWidth, bool magazinesToStorage = true, bool weaponSwap = true, bool fallbackStorages = true, bool arsenalAttachments = true, int slotsPerFrame = 48, bool persistLoadouts = true)
 	{
 		ARC_Settings settings = new ARC_Settings();
 		settings.m_bWidePanel = widePanel;
@@ -50,6 +59,8 @@ class ARC_Settings
 		settings.m_bWeaponSwap = weaponSwap;
 		settings.m_bFallbackStorages = fallbackStorages;
 		settings.m_bArsenalAttachments = arsenalAttachments;
+		settings.m_iSlotsPerFrame = Math.ClampInt(slotsPerFrame, 0, MAX_SLOTS_PER_FRAME);
+		settings.m_bPersistLoadouts = persistLoadouts;
 		return settings;
 	}
 
@@ -105,5 +116,17 @@ class ARC_Settings
 	bool IsArsenalAttachments()
 	{
 		return m_bArsenalAttachments;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetSlotsPerFrame()
+	{
+		return m_iSlotsPerFrame;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsPersistLoadouts()
+	{
+		return m_bPersistLoadouts;
 	}
 }
