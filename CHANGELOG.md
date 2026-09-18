@@ -2,6 +2,7 @@
 
 ## 1.1.0
 
+- Category tiles restyled to the inventory-slot look (icon, name, count column, orange selection frame), in one column that scrolls with the number of categories (`categoriesPerColumn: 0`; set a number to wrap into columns instead).
 - Wide arsenal panel, WCS-style: own layout for the Vicinity panel only (categories inside the panel, 8-column grid), configurable through the JSON `layout` object / the .conf (`widePanel`, `columns`, `rows`, `categoriesPerColumn`, `categoryWidth`).
 - Smart Buy, WCS-style, configurable through the JSON `buy` object / the .conf: magazines go to a pouch instead of into the weapon, weapon swap into an occupied holster slot (refund + request on the server), fallback storages for rejected items.
 - Attachments while inspecting (`buy.arsenalAttachments`): the row under an attachment slot lists the arsenal's compatible attachments and magazines as buyable tiles, bought straight onto the weapon.

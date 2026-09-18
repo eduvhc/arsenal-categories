@@ -259,7 +259,7 @@ OverlayWidgetClass {
       ScrollLayoutWidgetClass "{F7767918EF9C8142}" {
        Name "ARC_CategoriesScroll"
        Slot LayoutSlot "{616E16751033E421}" {
-        VerticalAlign 0
+        VerticalAlign 3
         Padding 0 0 8 0
        }
        "Is Visible" 0

@@ -7,7 +7,7 @@ class ARC_Settings
 	static const int MAX_COLUMNS = 12;
 	static const int MIN_ROWS = 4;
 	static const int MAX_ROWS = 12;
-	static const int MIN_PER_COLUMN = 4;
+	static const int MIN_PER_COLUMN = 0;
 	static const int MAX_PER_COLUMN = 30;
 	static const int MIN_CATEGORY_WIDTH = 120;
 	static const int MAX_CATEGORY_WIDTH = 320;
@@ -21,8 +21,9 @@ class ARC_Settings
 	protected int m_iColumns = 8;
 	//! Item grid rows of the wide panel.
 	protected int m_iRows = 8;
-	//! Category buttons per column; longer lists wrap into further columns.
-	protected int m_iCategoriesPerColumn = 11;
+	//! Category tiles per column before wrapping into the next; 0 = one column that scrolls with
+	//! the number of categories (WCS-style).
+	protected int m_iCategoriesPerColumn = 0;
 	//! Width of one category button in pixels.
 	protected int m_iCategoryWidth = 200;
 	//! Arsenal tiles created per frame; the rest follow on the next frames so a 300-item arsenal

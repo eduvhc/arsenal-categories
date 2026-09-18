@@ -29,12 +29,12 @@ Load it on the server like any other addon; clients receive it automatically. Wi
 
 ## What it does
 
-- Replaces the Vicinity panel with a **wide arsenal panel** while an arsenal is open (the "Open Arsenal" view), WCS-style: the category list sits inside the panel on the left (wrapping into more columns when long) and the item grid next to it is 8 columns wide instead of 6. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
+- Replaces the Vicinity panel with a **wide arsenal panel** while an arsenal is open (the "Open Arsenal" view), WCS-style: the category list sits inside the panel on the left as inventory-slot-styled tiles (icon, name, count; orange frame on the selected one) in a column that scrolls with the number of categories and the item grid next to it is 8 columns wide instead of 6. Only categories that actually contain something in that arsenal get a button, each with its count; an *Other* button appears when items match no category.
 - Only that one panel uses the addon's layout (swapped in `SCR_InventoryMenuUI.ShowVicinity`, the same way WCS does it); no vanilla layout is overridden by GUID, so backpacks, vests and crates keep the vanilla panel. With `"widePanel": false` the vanilla panel is used and the category column is inserted into the inventory's content row to its left; if even that row is missing (another mod replaced the main layout) the buttons fall back to a two-column block above the grid — the feature never disappears.
 - Optional server-enforced hiding of items (e.g. RHS only, keep vanilla medical) via the same JSON.
 - Filtering re-uses the vanilla item list (`SCR_ArsenalComponent.GetFilteredArsenalItems`), so supply costs, rank locks and enabled item types keep working exactly as before.
 - Works in both places an arsenal can be listed: browsed from the **Vicinity** panel (the normal "Open Arsenal" flow) and opened as its own column.
-- Buttons are the vanilla `WLib_ButtonTextImage` widget (icon + caption), so mouse, keyboard and gamepad navigation behave like the rest of the inventory.
+- Category tiles use the inventory-slot look (`ARC_ArsenalCategoryButton.layout`, vanilla textures only), so they read as part of the inventory; mouse, keyboard and gamepad all work.
 - Smarter **Buy** (right-click on an arsenal item): magazines go to a pouch instead of into the weapon, buying a weapon into an occupied holster slot swaps it (old one refunded), rejected items fall back to other storages. Each is a switch in the JSON `buy` object.
 - **Attachments while inspecting**: with an arsenal open, the row under an attachment slot also lists the arsenal's compatible attachments and magazines, buyable straight onto the weapon.
 - Saved loadouts survive server restarts (`loadouts.persist`), and big arsenals open instantly because tiles are created over a few frames (`layout.slotsPerFrame`).
@@ -71,14 +71,14 @@ $profile:ArsenalCategories/categories.json
 The optional `"layout"` object shapes the panel (values are clamped to sane ranges; missing keys keep these defaults):
 
 ```json
-"layout": { "widePanel": true, "columns": 8, "rows": 8, "categoriesPerColumn": 11, "categoryWidth": 200, "slotsPerFrame": 48 }
+"layout": { "widePanel": true, "columns": 8, "rows": 8, "categoriesPerColumn": 0, "categoryWidth": 200, "slotsPerFrame": 48 }
 ```
 
 | Key | Meaning |
 |---|---|
 | `widePanel` | `true` = wide arsenal panel with the categories inside it; `false` = vanilla panel, categories in a column to its left |
 | `columns`, `rows` | Item grid size of the wide panel (vanilla: 6 × 8) |
-| `categoriesPerColumn` | Category buttons per column before wrapping into the next |
+| `categoriesPerColumn` | `0` = one column that scrolls with the number of categories (WCS-style); otherwise tiles per column before wrapping into the next |
 | `categoryWidth` | Button width in pixels |
 | `slotsPerFrame` | Arsenal tiles created per frame; the rest follow on the next frames, so a 300-item arsenal opens without a hitch. `0` = all at once (vanilla) |
 
@@ -200,7 +200,8 @@ Scripts/Game/ArsenalCategories/
   ARC_ArsenalComponent.c                 modded arsenal: drops hidden items on server and client
   ARC_ArsenalCategory.c                  one category: name, icon, type/mode masks, prefab-name rules
   ARC_ArsenalCategoryConfig.c            config root + built-in defaults
-  ARC_ArsenalFilterBar.c                 builds the icon+text button column from vanilla WLib_ButtonTextImage
+  ARC_ArsenalFilterBar.c                 builds the category tile column
+  ARC_CategoryButtonComponent.c          handler of one category tile
   ARC_ArsenalFilterController.c          shared: selection state, bar lifecycle, filtered item list
   ARC_InventoryStorageLootUI.c           modded Vicinity panel (arsenal browsed in place)
   ARC_InventoryOpenedStorageArsenalUI.c  modded standalone arsenal column
@@ -215,6 +216,7 @@ Configs/ArsenalCategories/
   ARC_ArsenalCategories.conf             the shipped categories
 UI/layouts/Menus/Inventory/
   ARC_InventoryContainerGrid.layout      the wide arsenal panel (vanilla panel + category grid), own GUID
+  ARC_ArsenalCategoryButton.layout       one category tile (icon, name, count, selection frame)
 ```
 
 Everything new is prefixed `ARC_`, including the members added to the modded classes and the widgets of the panel layout. No vanilla layout or script file is replaced by GUID.

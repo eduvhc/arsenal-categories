@@ -1,0 +1,165 @@
+SizeLayoutWidgetClass {
+ Name "ARC_CategoryButton"
+ components {
+  ARC_CategoryButtonComponent "{DC9F7C334725ED0F}" {
+  }
+ }
+ AllowWidthOverride 1
+ WidthOverride 180
+ AllowHeightOverride 1
+ HeightOverride 36
+ {
+  OverlayWidgetClass "{1552A4C100610ADD}" {
+   Name "ARC_Overlay"
+   Slot AlignableSlot "{FCFB0BAC00CEE747}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+    Padding 1 1 1 1
+   }
+   {
+    ButtonWidgetClass "{807E757758AED02E}" {
+     Name "ARC_Button"
+     Slot OverlayWidgetSlot "{9437A9D35AB99953}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 1 1 1 0
+     components {
+      SCR_ButtonBaseComponent "{CC52083E98E1C49A}" {
+       m_BackgroundDefault 0.009 0.013 0.014 1
+       m_BackgroundHovered 0.761 0.392 0.08 0.612
+      }
+     }
+     {
+      OverlayWidgetClass "{422C1D785BFE5E55}" {
+       Name "ARC_Content"
+       Slot ButtonWidgetSlot "{100D8F12BAD3ED62}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{C9840656B78CEC7C}" {
+         Name "ARC_Background"
+         Slot OverlayWidgetSlot "{8667B690316889A5}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 1 1 1 0.9
+         Texture "{A53686E1AEDAE692}UI/Textures/Common/gradientTexture_ItemSlot_Hover_512.edds"
+         Size 512 512
+         Mask "{A53686E1AEDAE692}UI/Textures/Common/gradientTexture_ItemSlot_Hover_512.edds"
+         "Transition width" 0.34
+         Progress 0.94
+         Range 0.19
+        }
+        HorizontalLayoutWidgetClass "{E100FE3048B1BBBA}" {
+         Name "ARC_Row"
+         Slot OverlayWidgetSlot "{950E4BDBF3851BB3}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          SizeLayoutWidgetClass "{E47DA5DA8440CC0A}" {
+           Name "ARC_IconBox"
+           Slot LayoutSlot "{6AB011B74C68E2EB}" {
+            VerticalAlign 1
+            Padding 6 0 4 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 26
+           AllowHeightOverride 1
+           HeightOverride 26
+           {
+            ImageWidgetClass "{E5747A607482D430}" {
+             Name "ARC_Icon"
+             Slot AlignableSlot "{E17C253E86AFE12D}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.75 0.75 0.75 1
+             Size 64 64
+            }
+           }
+          }
+          TextWidgetClass "{00D0847589837FBF}" {
+           Name "ARC_Label"
+           Slot LayoutSlot "{E9A056189010D206}" {
+            VerticalAlign 1
+            Padding 2 0 4 0
+            SizeMode Fill
+            FillWeight 1
+           }
+           Text ""
+           "Font Size" 13
+           "Min Font Size" 10
+           "Vertical Alignment" Center
+           "Exact Text" 1
+          }
+          TextWidgetClass "{5C510FFDC5608371}" {
+           Name "ARC_Count"
+           Slot LayoutSlot "{C79542E382AABBE9}" {
+            VerticalAlign 1
+            Padding 0 0 8 0
+           }
+           Color 0.6 0.6 0.6 1
+           Text ""
+           "Font Size" 12
+           "Vertical Alignment" Center
+           "Horizontal Alignment" Right
+           "Exact Text" 1
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    PanelWidgetClass "{3DF4209190467798}" {
+     Name "ARC_Border"
+     Slot OverlayWidgetSlot "{5AA15D9B242BC1FB}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Z Order" 5
+     "Ignore Cursor" 1
+     Color 0.1 0.1 0.1 1
+     style pixel_outline
+    }
+    OverlayWidgetClass "{04946A42CCC545BF}" {
+     Name "ARC_Selected"
+     Slot OverlayWidgetSlot "{7514F329C94C2573}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     "Is Visible" 0
+     "Ignore Cursor" 1
+     Color 0.032 0.032 0.032 0.392
+     {
+      ImageWidgetClass "{C5299571457A19A7}" {
+       Name "ARC_SelectedGlow"
+       Slot OverlayWidgetSlot "{58E2FA915D9A029A}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Opacity 0.32
+       Color 0.761 0.392 0.078 0.25
+       Texture "{27B9022E3094F0D3}UI/Textures/InventoryIcons/BackgroundGradient.edds"
+       "Flip Vertically" 1
+       "Transition width" 0.18
+       Progress 0.44
+      }
+      PanelWidgetClass "{F70E45E8AE1678BC}" {
+       Name "ARC_SelectedBorder"
+       Slot OverlayWidgetSlot "{B000630B1BDAFFE1}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 1 0.65 0.15 1
+       style outline_2px
+      }
+     }
+    }
+   }
+  }
+ }
+}

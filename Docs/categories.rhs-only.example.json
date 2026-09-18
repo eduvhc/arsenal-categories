@@ -3,7 +3,7 @@
     "widePanel": true,
     "columns": 8,
     "rows": 8,
-    "categoriesPerColumn": 11,
+    "categoriesPerColumn": 0,
     "categoryWidth": 200,
     "slotsPerFrame": 48
   },

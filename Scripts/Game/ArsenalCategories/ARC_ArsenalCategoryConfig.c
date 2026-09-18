@@ -35,7 +35,7 @@ class ARC_ArsenalCategoryConfig
 	[Attribute("8", UIWidgets.Slider, "Item grid rows of the wide panel", "4 12 1", category: "Layout")]
 	protected int m_iGridRows;
 
-	[Attribute("11", UIWidgets.Slider, "Category buttons per column", "4 30 1", category: "Layout")]
+	[Attribute("0", UIWidgets.Slider, "Category tiles per column before wrapping; 0 = one column that scrolls", "0 30 1", category: "Layout")]
 	protected int m_iCategoriesPerColumn;
 
 	[Attribute("200", UIWidgets.Slider, "Width of a category button (px)", "120 320 1", category: "Layout")]
